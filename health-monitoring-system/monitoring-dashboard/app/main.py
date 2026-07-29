@@ -13,6 +13,8 @@ from fastapi.templating import Jinja2Templates
 
 from app.core.config import settings
 from app.core.logging import setup_logging, app_logger, error_logger
+from app.database.session import engine
+from app.database.models import Base
 from app.services.monitoring_service import MonitoringService
 from app.routers import auth, dashboard, services, health, logs
 
@@ -21,6 +23,13 @@ async def lifespan(app: FastAPI):
     # Startup Sequence
     setup_logging()
     app_logger.info("Main: Starting up SRE Infrastructure Health Monitoring Portal...")
+    
+    # 0. Initialize/verify database tables in PostgreSQL/SQLite
+    try:
+        Base.metadata.create_all(bind=engine)
+        app_logger.info("Main: Database schema tables verified.")
+    except Exception as err:
+        app_logger.warning(f"Main: Database schema creation note: {err}")
     
     # 1. Run database seeding (skip during automated test suites to preserve fixture state)
     if not os.environ.get("TESTING"):

@@ -9,8 +9,8 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from sqlalchemy.orm import Session
-from app.database.session import SessionLocal
-from app.database.models import User, Service, HealthLog
+from app.database.session import SessionLocal, engine
+from app.database.models import Base, User, Service, HealthLog
 from app.core.security import get_password_hash
 from app.core.logging import setup_logging, app_logger
 
@@ -19,6 +19,14 @@ def seed_db() -> None:
     Seeds database with default system operators and monitored nodes.
     """
     setup_logging()
+    
+    try:
+        # Create database tables if they do not exist yet in PostgreSQL
+        Base.metadata.create_all(bind=engine)
+        app_logger.info("Seeder: Verified database schema tables exist.")
+    except Exception as table_err:
+        app_logger.warning(f"Seeder: Table creation note: {table_err}")
+        
     db: Session = SessionLocal()
     
     try:
