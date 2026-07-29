@@ -4,6 +4,7 @@
     min-height: 100vh;
     width: 100vw;
     background-color: var(--bg-app);
+    overflow-y: auto;
 }
 
 .auth-split-left {
@@ -16,6 +17,7 @@
     flex-direction: column;
     justify-content: center;
     padding: var(--space-xl) 10%;
+    overflow-y: auto;
 }
 
 .auth-split-right {
@@ -23,8 +25,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: var(--space-xl);
+    padding: var(--space-md);
     background-color: var(--bg-app);
+    overflow-y: auto;
+    min-height: 100vh;
 }
 
 .auth-card-enterprise {
@@ -33,8 +37,9 @@
     background-color: var(--bg-card) !important;
     border: 1px solid var(--border-color) !important;
     border-radius: var(--radius-lg) !important;
-    padding: var(--space-xl) !important;
+    padding: var(--space-lg) !important;
     box-shadow: var(--shadow-soft);
+    margin: var(--space-md) 0;
 }
 
 .auth-feature-list {
@@ -66,14 +71,14 @@
 
 /* Auth forms modifications */
 .auth-title {
-    font-size: 1.45rem;
+    font-size: 1.35rem;
     font-weight: var(--font-bold);
     color: var(--text-primary);
-    margin-bottom: 4px;
+    margin-bottom: 2px;
 }
 
 .auth-subtitle {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: var(--text-secondary);
-    margin-bottom: var(--space-lg);
+    margin-bottom: var(--space-md);
 }

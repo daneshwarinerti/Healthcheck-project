@@ -59,7 +59,7 @@
 
             <!-- Registration Form -->
             <form id="register-form">
-                <div class="row g-3 mb-3">
+                <div class="row g-2 mb-2">
                     <div class="col-6">
                         <label for="first_name" class="form-label-enterprise">First Name</label>
                         <input type="text" class="form-control-enterprise" id="first_name" required placeholder="John">
@@ -70,12 +70,12 @@
                     </div>
                 </div>
 
-                <div class="form-group-enterprise mb-3">
+                <div class="form-group-enterprise mb-2">
                     <label for="email" class="form-label-enterprise">Email Address</label>
                     <input type="email" class="form-control-enterprise" id="email" placeholder="john.doe@example.com" required>
                 </div>
 
-                <div class="form-group-enterprise mb-3">
+                <div class="form-group-enterprise mb-2">
                     <label for="role" class="form-label-enterprise">Access Role</label>
                     <select class="form-select-enterprise pointer" id="role" required>
                         <option value="Viewer">Viewer (Read-Only Dashboard)</option>
@@ -84,7 +84,7 @@
                     </select>
                 </div>
 
-                <div class="row g-3 mb-3">
+                <div class="row g-2 mb-2">
                     <div class="col-6">
                         <label for="password" class="form-label-enterprise">Password</label>
                         <input type="password" class="form-control-enterprise" id="password" required placeholder="••••••••">
@@ -95,10 +95,10 @@
                     </div>
                 </div>
 
-                <!-- Password complexity helper card -->
-                <div class="p-3 rounded mb-4" style="background-color: var(--bg-input); border: 1px solid var(--border-color); font-size: 0.72rem; color: var(--text-secondary);">
-                    <div class="fw-bold mb-2 text-white text-uppercase tracking-wider" style="font-size: 0.68rem; letter-spacing: 0.5px;">Password Requirements:</div>
-                    <ul class="m-0 ps-3 d-flex flex-column gap-1">
+                <!-- Compact password complexity helper card -->
+                <div class="p-2.5 rounded mb-3" style="background-color: var(--bg-input); border: 1px solid var(--border-color); font-size: 0.7rem; color: var(--text-secondary);">
+                    <div class="fw-bold mb-1 text-white text-uppercase tracking-wider" style="font-size: 0.65rem; letter-spacing: 0.5px;">Password Requirements:</div>
+                    <ul class="m-0 ps-3 d-flex flex-column gap-0.5">
                         <li id="req-len" class="text-danger">Minimum 8 characters long</li>
                         <li id="req-case" class="text-danger">At least one uppercase and one lowercase letter</li>
                         <li id="req-num" class="text-danger">At least one numerical digit</li>
@@ -106,10 +106,10 @@
                     </ul>
                 </div>
 
-                <button type="submit" class="btn-primary-enterprise w-100 py-2.5 fw-semibold transition-all d-flex align-items-center justify-content-center gap-2" id="register-submit-btn">
+                <button type="submit" class="btn-sre btn-sre-primary w-100 py-2 d-flex align-items-center justify-content-center gap-2" id="register-submit-btn">
                     <span class="spinner-border spinner-border-sm d-none" id="register-spinner" role="status" aria-hidden="true"></span>
                     <span id="register-btn-text">Register Account</span>
-                    <i data-lucide="user-plus" id="register-btn-icon" style="width: 16px; height: 16px;"></i>
+                    <i data-lucide="user-plus" id="register-btn-icon" style="width: 15px; height: 15px;"></i>
                 </button>
             </form>
 
