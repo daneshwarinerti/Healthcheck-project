@@ -15,9 +15,10 @@
     {% block head %}{% endblock %}
 </head>
 <body>
+    {% if user %}
+    <!-- Authenticated App Shell -->
     <div class="app-shell">
-        <!-- Grafana Navigation Sidebar -->
-        {% if user %}
+        <!-- Sidebar -->
         <aside class="sidebar-panel" id="app-sidebar">
             <div class="sidebar-header">
                 <i data-lucide="activity" style="color: var(--grafana-orange);"></i>
@@ -71,19 +72,20 @@
                         </div>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser" style="background-color: #181b1f; border: 1px solid #22252b;">
-                        <li><span class="dropdown-item-text text-muted small">{{ user.email }}</span></li>
-                        <li><hr class="dropdown-divider border-dark-30" style="border-top-color: #22252b;"></li>
-                        <li><a class="dropdown-item text-danger" href="/logout"><i class="me-2" data-lucide="log-out" style="width: 14px; height: 14px;"></i>Logout</a></li>
+                        <li>
+                            <a class="dropdown-item text-danger d-flex align-items-center gap-2" href="/logout" onclick="localStorage.clear();">
+                                <i data-lucide="log-out" style="width: 14px; height: 14px;"></i>
+                                <span>Logout</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
                 <div class="sidebar-version-tag">GRAFANA v10.4.0</div>
             </div>
         </aside>
-        {% endif %}
 
-        <!-- Content Area Container -->
+        <!-- Main Content Viewport Container -->
         <div class="main-container">
-            {% if user %}
             <!-- Grafana Topbar Navigation -->
             <header class="topbar-nav">
                 <div class="topbar-nav-left">
@@ -117,14 +119,17 @@
                     </div>
                 </div>
             </header>
-            {% endif %}
 
-            <!-- Main Scroll Container -->
+            <!-- Scroll Container -->
             <main class="scrollable-content">
                 {% block content %}{% endblock %}
             </main>
         </div>
     </div>
+    {% else %}
+    <!-- Unauthenticated Full-Screen Layout (Login / Register) -->
+    {% block content %}{% endblock %}
+    {% endif %}
 
     <!-- Toast Notification Container -->
     <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
@@ -142,7 +147,6 @@
     <!-- Bootstrap Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Live UTC Clock
         function initClock() {
             const clockEl = document.getElementById("live-utc-clock");
             if (!clockEl) return;
