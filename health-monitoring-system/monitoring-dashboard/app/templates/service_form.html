@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if service %}Edit Service: {{ service.name }}{% else %}Register New Target Node{% endif %} - {{ app_name }}
+{% endblock %}
+
+{% block header_title %}
+    {% if service %}Modify Monitored Target{% else %}Add Infrastructure Node{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-md-10 col-lg-8">
+        <div class="card bg-navbar border border-dark-30 shadow-sm">
+            <div class="card-header border-bottom border-dark-30 bg-navbar py-3 px-4">
+                <h5 class="card-title text-white m-0 fw-bold d-flex align-items-center gap-2">
+                    <i class="bi {% if service %}bi-pencil-square text-warning{% else %}bi-plus-circle text-primary{% endif %}"></i>
+                    <span>{% if service %}Edit '{{ service.name }}' Settings{% else %}New Monitored service endpoint{% endif %}</span>
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <!-- Validation Error Notification -->
+                <div id="form-error-alert" class="alert alert-danger d-none shadow-sm small py-2.5 px-3 mb-4" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <span id="form-error-message"></span>
+                </div>
+
+                <form id="service-node-form">
+                    <!-- Name & Environment -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-12 col-md-6">
+                            <label for="name" class="form-label text-light-50 small fw-medium text-uppercase tracking-wider">Service Name</label>
+                            <input type="text" class="form-control bg-dark-20 border-dark-30 text-white" id="name" required placeholder="e.g. Payment Service" value="{% if service %}{{ service.name }}{% endif %}" {% if service %}disabled{% endif %}>
+                            <div class="form-text text-light-50" style="font-size:0.75rem;">Unique name referencing the microservice node.</div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label for="environment" class="form-label text-light-50 small fw-medium text-uppercase tracking-wider">Environment Tier</label>
+                            <select class="form-select bg-dark-20 border-dark-30 text-white pointer" id="environment" required>
+                                <option value="Production" {% if service and service.environment == 'Production' %}selected{% endif %}>Production</option>
+                                <option value="Testing" {% if service and service.environment == 'Testing' %}selected{% endif %}>Testing (Staging / QA)</option>
+                                <option value="Development" {% if service and service.environment == 'Development' %}selected{% endif %}>Development</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Health Endpoint URL -->
+                    <div class="mb-3">
+                        <label for="health_url" class="form-label text-light-50 small fw-medium text-uppercase tracking-wider">Health Probe URL / Socket Address</label>
+                        <input type="text" class="form-control bg-dark-20 border-dark-30 text-white" id="health_url" required placeholder="e.g. http://localhost:8002/health or localhost:5432" value="{% if service %}{{ service.health_url }}{% endif %}">
+                        <div class="form-text text-light-50" style="font-size:0.75rem;">Specify an HTTP URL endpoint (starts with http:// or https://) or a TCP socket host:port coordinate.</div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-3">
+                        <label for="description" class="form-label text-light-50 small fw-medium text-uppercase tracking-wider">Description</label>
+                        <textarea class="form-control bg-dark-20 border-dark-30 text-white" id="description" rows="2" placeholder="Brief summary of what this microservice does.">{% if service %}{{ service.description or '' }}{% endif %}</textarea>
+                    </div>
+
+                    <!-- Custom Alarm Thresholds -->
+                    <div class="border-top border-dark-30 my-4 pt-3">
+                        <h6 class="text-white fw-bold mb-3 text-uppercase tracking-wider" style="font-size: 0.8rem; letter-spacing: 0.5px;">SRE Alert Thresholds Settings</h6>
+                        
+                        <div class="row g-3">
+                            <div class="col-12 col-md-4">
+                                <label for="response_time_threshold" class="form-label text-light-50 small fw-medium">Max Latency Limit (ms)</label>
+                                <input type="number" class="form-control bg-dark-20 border-dark-30 text-white" id="response_time_threshold" required min="10" max="30000" value="{% if service %}{{ service.response_time_threshold }}{% else %}1000{% endif %}">
+                                <div class="form-text text-light-50" style="font-size:0.7rem;">Alerts if probe response time exceeds this latency limit (Default: 1000ms).</div>
+                            </div>
+                            
+                            <div class="col-12 col-md-4">
+                                <label for="cpu_threshold" class="form-label text-light-50 small fw-medium">Max Host CPU Limit (%)</label>
+                                <input type="number" class="form-control bg-dark-20 border-dark-30 text-white" id="cpu_threshold" required min="1" max="100" value="{% if service %}{{ service.cpu_threshold }}{% else %}90{% endif %}">
+                                <div class="form-text text-light-50" style="font-size:0.7rem;">Triggers threshold alarm if host CPU percent exceeds this level.</div>
+                            </div>
+                            
+                            <div class="col-12 col-md-4">
+                                <label for="memory_threshold" class="form-label text-light-50 small fw-medium">Max Host RAM Limit (%)</label>
+                                <input type="number" class="form-control bg-dark-20 border-dark-30 text-white" id="memory_threshold" required min="1" max="100" value="{% if service %}{{ service.memory_threshold }}{% else %}90{% endif %}">
+                                <div class="form-text text-light-50" style="font-size:0.7rem;">Triggers threshold alarm if host memory percent exceeds this level.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="d-flex gap-2 justify-content-end border-top border-dark-30 pt-3 mt-4">
+                        <a href="/" class="btn btn-outline-secondary px-4 transition-all">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-4 fw-semibold transition-all d-flex align-items-center gap-1.5" id="btn-submit">
+                            <span class="spinner-border spinner-border-sm d-none" id="form-spinner" role="status" aria-hidden="true"></span>
+                            <i class="bi bi-check-lg" id="submit-icon"></i>
+                            <span id="btn-submit-text">{% if service %}Save Changes{% else %}Register Node{% endif %}</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Toggle Sidebar Active Selection
+        const navAdd = document.getElementById("nav-add-service");
+        if (navAdd) navAdd.classList.add("active", "bg-primary");
+
+        const form = document.getElementById("service-node-form");
+        const alertBox = document.getElementById("form-error-alert");
+        const alertMsg = document.getElementById("form-error-message");
+        const submitBtn = document.getElementById("btn-submit");
+        const spinner = document.getElementById("form-spinner");
+        const submitIcon = document.getElementById("submit-icon");
+        const btnText = document.getElementById("btn-submit-text");
+
+        const editId = "{% if service %}{{ service.id }}{% else %}{% endif %}";
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            alertBox.classList.add("d-none");
+
+            // Set loading state
+            submitBtn.disabled = true;
+            spinner.classList.remove("d-none");
+            submitIcon.classList.add("d-none");
+            btnText.textContent = editId ? "Saving..." : "Registering...";
+
+            const payload = {
+                name: document.getElementById("name").value.trim(),
+                environment: document.getElementById("environment").value,
+                health_url: document.getElementById("health_url").value.trim(),
+                description: document.getElementById("description").value.trim(),
+                response_time_threshold: parseInt(document.getElementById("response_time_threshold").value),
+                cpu_threshold: parseFloat(document.getElementById("cpu_threshold").value),
+                memory_threshold: parseFloat(document.getElementById("memory_threshold").value)
+            };
+
+            const token = localStorage.getItem("token");
+            const headers = {
+                "Content-Type": "application/json"
+            };
+            if (token) {
+                headers["Authorization"] = `Bearer ${token}`;
+            }
+
+            const url = editId ? `/api/services/${editId}` : "/api/services";
+            const method = editId ? "PUT" : "POST";
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: headers,
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.detail || "Error saving service endpoint configuration details.");
+                }
+
+                // Show notification and redirect
+                showNotification(
+                    editId ? "Service node configuration updated successfully." : "Service node registered successfully.", 
+                    "success"
+                );
+                setTimeout(() => {
+                    window.location.href = "/";
+                }, 1500);
+
+            } catch (err) {
+                alertMsg.textContent = err.message;
+                alertBox.classList.remove("d-none");
+                
+                // Reset states
+                submitBtn.disabled = false;
+                spinner.classList.add("d-none");
+                submitIcon.classList.remove("d-none");
+                btnText.textContent = editId ? "Save Changes" : "Register Node";
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,528 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if service %}Service Details: {{ service.name }}{% else %}Logs & Audit Explorer{% endif %} - {{ app_name }}
+{% endblock %}
+
+{% block header_title %}
+    {% if service %}Service Details Profile{% else %}Logs Explorer{% endif %}
+{% endblock %}
+
+{% block content %}
+{% if service %}
+<!-- ==================================================== -->
+<!-- SERVICE DETAILS VIEW MODE                            -->
+<!-- ==================================================== -->
+<div class="row g-3 mb-4">
+    <!-- Back control -->
+    <div class="col-12">
+        <a href="/" class="btn btn-outline-secondary btn-sm px-3 transition-all">
+            <i class="bi bi-arrow-left me-1"></i>Back to Live Dashboard
+        </a>
+    </div>
+    
+    <!-- Title & Action Buttons -->
+    <div class="col-12 d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div>
+            <h2 class="text-white fw-bold m-0 d-flex align-items-center gap-2">
+                <i class="bi bi-hdd-network-fill text-primary"></i>
+                <span>{{ service.name }}</span>
+            </h2>
+            <p class="text-light-50 small m-0 mt-1">{{ service.description or 'No service description configured.' }}</p>
+        </div>
+        
+        <div class="d-flex gap-2">
+            <!-- Manual Check Restart -->
+            <button class="btn btn-outline-primary btn-sm px-3 d-flex align-items-center gap-1.5 transition-all" id="btn-manual-check">
+                <span class="spinner-border spinner-border-sm d-none" id="check-spinner"></span>
+                <i class="bi bi-arrow-clockwise" id="check-icon"></i>
+                <span>Restart Check</span>
+            </button>
+            
+            <!-- Acknowledge alerts -->
+            <button class="btn btn-outline-warning btn-sm px-3 d-flex align-items-center gap-1.5 transition-all" id="btn-ack-alerts">
+                <i class="bi bi-shield-check"></i>
+                <span>Acknowledge Alerts</span>
+            </button>
+
+            <!-- Edit (Admin only) -->
+            {% if user.role == "Admin" %}
+            <a href="/services/{{ service.id }}/edit" class="btn btn-outline-secondary btn-sm px-3 d-flex align-items-center gap-1.5 transition-all">
+                <i class="bi bi-gear-fill"></i>
+                <span>Edit Config</span>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- SRE Metrics Grid -->
+<div class="row g-3 mb-4">
+    <!-- Status Badge -->
+    <div class="col-6 col-md-3 col-lg-2">
+        <div class="card stat-card bg-navbar border border-dark-30 text-white shadow-sm h-100 text-center py-2">
+            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                <span class="small text-light-50 text-uppercase tracking-wider">Status</span>
+                <div class="mt-2">
+                    <span id="detail-status-badge" class="badge px-3 py-2 fs-6 status-badge-{{ service.status | lower }}">{{ service.status }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Availability % Card -->
+    <div class="col-6 col-md-3 col-lg-2">
+        <div class="card stat-card bg-navbar border border-dark-30 text-white shadow-sm h-100 text-center py-2">
+            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                <span class="small text-light-50 text-uppercase tracking-wider">Availability</span>
+                <span class="fs-3 fw-bold text-glow mt-1 text-white" id="detail-availability-percent">{{ service.availability }}%</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Avg Latency Card -->
+    <div class="col-6 col-md-3 col-lg-2">
+        <div class="card stat-card bg-navbar border border-dark-30 text-white shadow-sm h-100 text-center py-2">
+            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                <span class="small text-light-50 text-uppercase tracking-wider">Current Latency</span>
+                <span class="fs-3 fw-bold text-info mt-1" id="detail-latency">{{ service.response_time }} <span class="small" style="font-size:0.6em;">ms</span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Port & Hostname Card -->
+    <div class="col-6 col-md-3 col-lg-2">
+        <div class="card stat-card bg-navbar border border-dark-30 text-white shadow-sm h-100 text-center py-2">
+            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                <span class="small text-light-50 text-uppercase tracking-wider">Coordinates</span>
+                <span class="fs-5 fw-bold text-white mt-2 text-truncate w-100" title="{{ service.hostname }}:{{ service.port }}">{{ service.hostname }}:{{ service.port }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Version Card -->
+    <div class="col-6 col-md-6 col-lg-2">
+        <div class="card stat-card bg-navbar border border-dark-30 text-white shadow-sm h-100 text-center py-2">
+            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                <span class="small text-light-50 text-uppercase tracking-wider">Version</span>
+                <span class="fs-4 fw-bold text-white mt-1" id="detail-version">{{ service.version }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Uptime Card -->
+    <div class="col-6 col-md-6 col-lg-2">
+        <div class="card stat-card bg-navbar border border-dark-30 text-white shadow-sm h-100 text-center py-2">
+            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                <span class="small text-light-50 text-uppercase tracking-wider">Uptime</span>
+                <span class="fs-5 fw-semibold text-success mt-2 text-truncate w-100" id="detail-uptime" title="{{ service.uptime_str }}">{{ service.uptime_str }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Log Timelines & Graphs -->
+<div class="row g-4 mb-4">
+    <!-- Latency Timeline Graph -->
+    <div class="col-12 col-lg-8">
+        <div class="card bg-navbar border border-dark-30 shadow-sm p-4">
+            <h5 class="card-title text-white mb-3 fw-bold">Latency Latency Trend (Last 100 Checks)</h5>
+            <div style="height: 250px;"><canvas id="chart-service-detail-latency"></canvas></div>
+        </div>
+    </div>
+    
+    <!-- Checklist Stats and Availability Details -->
+    <div class="col-12 col-lg-4">
+        <div class="card bg-navbar border border-dark-30 shadow-sm h-100 p-4 d-flex flex-column justify-content-between">
+            <div>
+                <h5 class="card-title text-white mb-3 fw-bold">Incident Log Telemetry</h5>
+                <ul class="list-group list-group-flush bg-transparent text-light-50" style="font-size:0.85rem;">
+                    <li class="list-group-item bg-transparent border-dark-30 px-0 d-flex justify-content-between text-light-50">
+                        <span>Environment Tier:</span>
+                        <strong class="text-white">{{ service.environment }}</strong>
+                    </li>
+                    <li class="list-group-item bg-transparent border-dark-30 px-0 d-flex justify-content-between text-light-50">
+                        <span>Endpoint URL:</span>
+                        <strong class="text-white text-truncate text-end w-75" title="{{ service.health_url }}">{{ service.health_url }}</strong>
+                    </li>
+                    <li class="list-group-item bg-transparent border-dark-30 px-0 d-flex justify-content-between text-light-50">
+                        <span>Last Successful Check:</span>
+                        <strong class="text-white" id="detail-last-success">
+                            {{ service.last_success.strftime('%Y-%m-%d %H:%M:%S') if service.last_success else 'N/A' }}
+                        </strong>
+                    </li>
+                    <li class="list-group-item bg-transparent border-dark-30 px-0 d-flex justify-content-between text-light-50">
+                        <span>Last Failed Check:</span>
+                        <strong class="text-danger" id="detail-last-failure">
+                            {{ service.last_failure.strftime('%Y-%m-%d %H:%M:%S') if service.last_failure else 'N/A' }}
+                        </strong>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="mt-4">
+                <span class="small text-light-50 text-uppercase tracking-wider mb-2 d-block">Incident Recovery Health Ratio</span>
+                <div class="progress bg-dark-20 progress-bar-height" style="height:15px;">
+                    <div class="progress-bar bg-success" role="progressbar" id="detail-progress-availability" style="width: {{ service.availability }}%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Last 100 Status Timeline Blocks -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card bg-navbar border border-dark-30 shadow-sm p-4">
+            <h5 class="card-title text-white mb-3 fw-bold d-flex align-items-center justify-content-between">
+                <span>Check History Status Timeline</span>
+                <span class="small text-light-50" style="font-size:0.75rem;">Oldest &rarr; Newest</span>
+            </h5>
+            
+            <!-- Timeline blocks grid layout -->
+            <div class="d-flex flex-wrap gap-1.5 timeline-grid-scroll py-2 px-1" id="detail-timeline-blocks">
+                {% for status in service.history_statuses %}
+                    <span class="timeline-block timeline-block-{{ status | lower }}" title="Check Status: {{ status }}"></span>
+                {% endfor %}
+                {% if not service.history_statuses %}
+                    <div class="text-center w-100 text-light-50 py-3 small">No checks scheduled yet.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Logs List for Specific Service -->
+<div class="row">
+    <div class="col-12">
+        <div class="card bg-navbar border border-dark-30 shadow-sm">
+            <div class="card-header border-bottom border-dark-30 bg-navbar py-3 px-4">
+                <h5 class="card-title text-white m-0 fw-bold">Recent Probe Audits (Last 50 Logs)</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover table-striped align-middle mb-0" id="detail-logs-table">
+                        <thead>
+                            <tr class="table-header-style">
+                                <th class="ps-4">Timestamp</th>
+                                <th>Status</th>
+                                <th>Response Latency</th>
+                                <th>HTTP Status</th>
+                                <th class="pe-4">Remarks / Error Logs</th>
+                            </tr>
+                        </thead>
+                        <tbody id="detail-logs-tbody">
+                            <!-- Loaded dynamically or filled -->
+                            <tr>
+                                <td colspan="5" class="text-center py-4 text-light-50">
+                                    <div class="spinner-border spinner-border-sm text-primary me-2"></div>
+                                    Reading log records...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% else %}
+<!-- ==================================================== -->
+<!-- GLOBAL LOGS EXPLORER MODE                            -->
+<!-- ==================================================== -->
+<div class="row g-4">
+    <!-- Log Filter Controls Column -->
+    <div class="col-12">
+        <div class="card bg-navbar border border-dark-30 shadow-sm p-4">
+            <h5 class="card-title text-white mb-4 fw-bold d-flex align-items-center gap-2">
+                <i class="bi bi-funnel text-primary"></i>
+                <span>Query Filters</span>
+            </h5>
+            
+            <form id="logs-query-form" class="row g-3 align-items-end">
+                <!-- Log Type Selection -->
+                <div class="col-12 col-md-3">
+                    <label for="log-type" class="form-label text-light-50 small fw-medium text-uppercase tracking-wider">Log Type</label>
+                    <select class="form-select bg-dark-20 border-dark-30 text-white pointer" id="log-type" required>
+                        <option value="health">Health Probe Logs</option>
+                        <option value="audit">Administrative Audit Logs</option>
+                        <option value="application">Live Application Log Output</option>
+                    </select>
+                </div>
+                
+                <!-- Service Target (Only for Health checks) -->
+                <div class="col-12 col-md-3" id="filter-service-container">
+                    <label for="log-service-id" class="form-label text-light-50 small fw-medium text-uppercase tracking-wider">Target Node</label>
+                    <select class="form-select bg-dark-20 border-dark-30 text-white pointer" id="log-service-id">
+                        <option value="">All Services</option>
+                        {% for s in services %}
+                            <option value="{{ s.id }}">{{ s.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Status Filter (Only for Health checks) -->
+                <div class="col-12 col-md-3" id="filter-status-container">
+                    <label for="log-status" class="form-label text-light-50 small fw-medium text-uppercase tracking-wider">Status Alert</label>
+                    <select class="form-select bg-dark-20 border-dark-30 text-white pointer" id="log-status">
+                        <option value="All">All Statuses</option>
+                        <option value="Healthy">Healthy</option>
+                        <option value="Warning">Warning</option>
+                        <option value="Critical">Critical</option>
+                        <option value="Offline">Offline</option>
+                    </select>
+                </div>
+                
+                <!-- Submit Queries -->
+                <div class="col-12 col-md-3 ms-auto text-end">
+                    <button type="submit" class="btn btn-primary px-4 fw-semibold transition-all w-100 d-flex align-items-center justify-content-center gap-1.5">
+                        <i class="bi bi-search"></i>
+                        <span>Query Ledger</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Global Ledger Display Column -->
+    <div class="col-12">
+        <div class="card bg-navbar border border-dark-30 shadow-sm" id="logs-ledger-card">
+            <div class="card-header border-bottom border-dark-30 bg-navbar py-3 px-4 d-flex align-items-center justify-content-between">
+                <h5 class="card-title text-white m-0 fw-bold" id="ledger-title">Health Check Logs Ledger</h5>
+                <span class="badge bg-secondary" id="ledger-count-badge">0 Rows</span>
+            </div>
+            
+            <div class="card-body p-0" id="ledger-table-container">
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover table-striped align-middle mb-0" id="logs-explorer-table">
+                        <thead id="logs-explorer-thead">
+                            <!-- Populated dynamically via js -->
+                        </thead>
+                        <tbody id="logs-explorer-tbody">
+                            <tr>
+                                <td class="text-center py-5 text-light-50">
+                                    Please run a query to fetch log history.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Terminal output wrapper (Shown only when querying Application logs) -->
+            <div class="card-body p-0 d-none" id="ledger-terminal-container">
+                <div class="terminal-shell bg-app text-light-50 font-monospace p-4" style="height: 480px; overflow-y: auto;" id="terminal-screen">
+                    <!-- Logs lines loaded dynamically -->
+                </div>
+            </div>
+            
+            <!-- Pagination footer controls -->
+            <div class="card-footer border-top border-dark-30 bg-navbar py-3 px-4 d-flex align-items-center justify-content-between" id="ledger-pagination-container">
+                <button class="btn btn-outline-secondary btn-sm px-3 transition-all" id="btn-prev-page" disabled>
+                    <i class="bi bi-chevron-left me-1"></i>Previous Page
+                </button>
+                <span class="text-light-50 small fw-medium" id="page-indicator">Page 1</span>
+                <button class="btn btn-outline-secondary btn-sm px-3 transition-all" id="btn-next-page">
+                    Next Page<i class="bi bi-chevron-right ms-1"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% if service %}
+<script>
+    const serviceId = "{{ service.id }}";
+    // Initialize Sparkline Chart.js for specific service latency history
+    document.addEventListener("DOMContentLoaded", () => {
+        // Toggle Sidebar Active
+        const navLogs = document.getElementById("nav-logs");
+        if (navLogs) navLogs.classList.remove("active");
+        
+        const canvas = document.getElementById("chart-service-detail-latency");
+        const ctx = canvas.getContext("2d");
+        
+        // Grab values from service context injected by Jinja2
+        const rawLatencies = {{ service.history_latencies | tojson }};
+        const rawStatuses = {{ service.history_statuses | tojson }};
+        
+        // Build labels (1 to N)
+        const labels = Array.from({length: rawLatencies.length}, (_, i) => i + 1);
+
+        const latencyChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Probe Latency (ms)',
+                    data: rawLatencies,
+                    borderColor: '#0d6efd',
+                    backgroundColor: 'rgba(13, 110, 253, 0.08)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 2,
+                    pointHoverRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: { display: false },
+                    y: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: '#8c98a5', font: { size: 10 } }
+                    }
+                }
+            }
+        });
+
+        // Trigger manual check actions
+        const checkBtn = document.getElementById("btn-manual-check");
+        const checkSpinner = document.getElementById("check-spinner");
+        const checkIcon = document.getElementById("check-icon");
+        
+        checkBtn.addEventListener("click", async () => {
+            checkBtn.disabled = true;
+            checkSpinner.classList.remove("d-none");
+            checkIcon.classList.add("d-none");
+            
+            try {
+                const token = localStorage.getItem("token");
+                const headers = {};
+                if (token) headers["Authorization"] = `Bearer ${token}`;
+                
+                const response = await fetch(`/api/services/${serviceId}/check`, {
+                    method: "POST",
+                    headers: headers
+                });
+                
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.detail || "Probe check failed.");
+                
+                showNotification("Manual check executed successfully.", "success");
+                
+                // Dynamically reload details parameters
+                document.getElementById("detail-status-badge").className = `badge px-3 py-2 fs-6 status-badge-${data.status.toLowerCase()}`;
+                document.getElementById("detail-status-badge").textContent = data.status;
+                document.getElementById("detail-availability-percent").textContent = `${data.availability}%`;
+                document.getElementById("detail-latency").innerHTML = `${data.response_time} <span class="small" style="font-size:0.6em;">ms</span>`;
+                document.getElementById("detail-version").textContent = data.version;
+                document.getElementById("detail-uptime").textContent = data.uptime_str;
+                document.getElementById("detail-progress-availability").style.width = `${data.availability}%`;
+                
+                if (data.last_success) {
+                    const d = new Date(data.last_success);
+                    document.getElementById("detail-last-success").textContent = d.toLocaleString();
+                }
+                if (data.last_failure) {
+                    const d = new Date(data.last_failure);
+                    document.getElementById("detail-last-failure").textContent = d.toLocaleString();
+                }
+                
+                // Update Timeline blocks
+                const blockContainer = document.getElementById("detail-timeline-blocks");
+                blockContainer.innerHTML = "";
+                data.history_statuses.forEach(status => {
+                    const block = document.createElement("span");
+                    block.className = `timeline-block timeline-block-${status.toLowerCase()}`;
+                    block.title = `Check Status: ${status}`;
+                    blockContainer.appendChild(block);
+                });
+                
+                // Update chart
+                latencyChart.data.labels = Array.from({length: data.history_latencies.length}, (_, i) => i + 1);
+                latencyChart.data.datasets[0].data = data.history_latencies;
+                latencyChart.update();
+                
+                // Reload log rows
+                await loadLogs();
+                
+            } catch (ex) {
+                showNotification(ex.message, "danger");
+            } finally {
+                checkBtn.disabled = false;
+                checkSpinner.classList.add("d-none");
+                checkIcon.classList.remove("d-none");
+            }
+        });
+
+        // Acknowledge Alerts
+        const ackBtn = document.getElementById("btn-ack-alerts");
+        ackBtn.addEventListener("click", async () => {
+            try {
+                const token = localStorage.getItem("token");
+                const headers = {};
+                if (token) headers["Authorization"] = `Bearer ${token}`;
+                
+                const response = await fetch(`/api/services/${serviceId}/ack`, {
+                    method: "POST",
+                    headers: headers
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.detail || "Failed to ack alerts.");
+                
+                showNotification(data.message, "success");
+            } catch (ex) {
+                showNotification(ex.message, "danger");
+            }
+        });
+
+        // Load logs list for service
+        async function loadLogs() {
+            try {
+                const token = localStorage.getItem("token");
+                const headers = {};
+                if (token) headers["Authorization"] = `Bearer ${token}`;
+                
+                const response = await fetch(`/logs?type=health&service_id=${serviceId}&limit=50`, {
+                    headers: headers
+                });
+                const logs = await response.json();
+                
+                const tbody = document.getElementById("detail-logs-tbody");
+                tbody.innerHTML = "";
+                
+                if (logs.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="text-center text-light-50 py-4">No records found.</td></tr>`;
+                    return;
+                }
+                
+                logs.forEach(log => {
+                    const row = document.createElement("tr");
+                    const date = new Date(log.timestamp);
+                    const timestampStr = date.toLocaleString();
+                    const statusClass = `badge status-badge-${log.status.toLowerCase()}`;
+                    const httpCode = log.http_status ? log.http_status : '-';
+                    const remarksText = log.remarks ? log.remarks : '-';
+                    
+                    row.innerHTML = `
+                        <td class="ps-4 fw-medium text-white-50">${timestampStr}</td>
+                        <td><span class="${statusClass}">${log.status}</span></td>
+                        <td class="text-info">${log.response_time} ms</td>
+                        <td class="fw-bold">${httpCode}</td>
+                        <td class="pe-4 text-light-50 font-monospace small" style="max-width:300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${remarksText}">${remarksText}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } catch (ex) {
+                console.error(ex);
+            }
+        }
+        
+        loadLogs();
+    });
+</script>
+{% else %}
+<!-- Global Logs Explorer Script -->
+<script src="/static/js/logs.js"></script>
+{% endif %}
+{% endblock %}

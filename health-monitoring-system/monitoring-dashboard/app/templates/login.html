@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Sign In - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: calc(100vh - 56px);">
+    <div class="row w-100 justify-content-center">
+        <div class="col-md-5 col-lg-4">
+            <div class="card auth-card shadow-lg border-0 bg-navbar border-dark-30">
+                <div class="card-body p-5">
+                    <!-- Header -->
+                    <div class="text-center mb-4">
+                        <div class="auth-icon-wrapper mb-3 mx-auto bg-dark-20 border border-dark-30">
+                            <i class="bi bi-shield-lock-fill text-primary"></i>
+                        </div>
+                        <h2 class="auth-title fw-bold text-white fs-4">SRE Monitoring Portal</h2>
+                        <p class="auth-subtitle text-light-50 small m-0">Authenticate to view live configurations</p>
+                    </div>
+
+                    <!-- Error Alert -->
+                    <div id="error-alert" class="alert alert-danger d-none shadow-sm small py-2.5 px-3 mb-4" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <span id="error-message">Invalid credentials</span>
+                    </div>
+
+                    <!-- Login Form -->
+                    <form id="login-form">
+                        <div class="mb-3">
+                            <label for="email" class="form-label text-light-50 small fw-medium text-uppercase tracking-wider">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark-20 border-dark-30 text-light-50"><i class="bi bi-envelope"></i></span>
+                                <input type="email" class="form-control bg-dark-20 border-dark-30 text-white" id="email" placeholder="operator@example.com" required autocomplete="email">
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="password" class="form-label text-light-50 small fw-medium text-uppercase tracking-wider">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark-20 border-dark-30 text-light-50"><i class="bi bi-key"></i></span>
+                                <input type="password" class="form-control bg-dark-20 border-dark-30 text-white" id="password" placeholder="Enter password" required autocomplete="current-password">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 py-2.5 fw-semibold transition-all d-flex align-items-center justify-content-center gap-2" id="login-submit-btn">
+                            <span class="spinner-border spinner-border-sm d-none" id="login-spinner" role="status" aria-hidden="true"></span>
+                            <span id="login-btn-text">Sign In</span>
+                            <i class="bi bi-arrow-right" id="login-btn-icon"></i>
+                        </button>
+                    </form>
+
+                    <!-- Sign up redirect -->
+                    <div class="text-center mt-4 border-top border-dark-30 pt-3">
+                        <span class="text-light-50 small">New user? </span>
+                        <a href="/register" class="text-decoration-none text-primary small fw-semibold hover-white">
+                            Register Account
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const loginForm = document.getElementById("login-form");
+        const errorAlert = document.getElementById("error-alert");
+        const errorMessage = document.getElementById("error-message");
+        const submitBtn = document.getElementById("login-submit-btn");
+        const spinner = document.getElementById("login-spinner");
+        const btnText = document.getElementById("login-btn-text");
+        const btnIcon = document.getElementById("login-btn-icon");
+
+        loginForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            errorAlert.classList.add("d-none");
+            
+            // Set loading state
+            submitBtn.disabled = true;
+            spinner.classList.remove("d-none");
+            btnText.textContent = "Verifying...";
+            btnIcon.classList.add("d-none");
+
+            const emailVal = document.getElementById("email").value.trim();
+            const passwordVal = document.getElementById("password").value;
+
+            try {
+                const response = await fetch("/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        email: emailVal,
+                        password: passwordVal
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.detail || "Authentication credentials verification failed.");
+                }
+
+                // Store token inside local storage
+                localStorage.setItem("token", data.access_token);
+                localStorage.setItem("role", data.role);
+                localStorage.setItem("user_email", emailVal);
+
+                // Differentiate redirect depending on token cookie setting
+                window.location.href = "/";
+            } catch (err) {
+                errorMessage.textContent = err.message;
+                errorAlert.classList.remove("d-none");
+                
+                // Reset loading state
+                submitBtn.disabled = false;
+                spinner.classList.add("d-none");
+                btnText.textContent = "Sign In";
+                btnIcon.classList.remove("d-none");
+            }
+        });
+    });
+</script>
+{% endblock %}

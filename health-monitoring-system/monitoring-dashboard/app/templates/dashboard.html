@@ -1,0 +1,307 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - {{ app_name }}{% endblock %}
+
+{% block header_title %}SRE Monitoring Dashboard{% endblock %}
+
+{% block content %}
+<!-- Top SRE KPI Cards -->
+<div class="row g-3 mb-4">
+    <!-- Total Services Card -->
+    <div class="col-6 col-sm-4 col-md-3 col-lg-1-5">
+        <div class="card stat-card bg-navbar border border-dark-30 text-white shadow-sm h-100">
+            <div class="card-body py-3 d-flex flex-column justify-content-between">
+                <span class="small text-light-50 text-uppercase tracking-wider">Services</span>
+                <div class="d-flex align-items-baseline gap-2 mt-1">
+                    <span class="fs-2 fw-bold text-white" id="card-total-services">0</span>
+                    <i class="bi bi-hdd-network text-primary fs-4 ms-auto"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Healthy Services Card -->
+    <div class="col-6 col-sm-4 col-md-3 col-lg-1-5">
+        <div class="card stat-card bg-navbar border border-dark-30 text-white shadow-sm h-100">
+            <div class="card-body py-3 d-flex flex-column justify-content-between">
+                <span class="small text-light-50 text-uppercase tracking-wider">Healthy</span>
+                <div class="d-flex align-items-baseline gap-2 mt-1">
+                    <span class="fs-2 fw-bold text-success" id="card-healthy-services">0</span>
+                    <i class="bi bi-check-circle-fill text-success fs-4 ms-auto"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Warning Services Card -->
+    <div class="col-6 col-sm-4 col-md-3 col-lg-1-5">
+        <div class="card stat-card bg-navbar border border-dark-30 text-white shadow-sm h-100">
+            <div class="card-body py-3 d-flex flex-column justify-content-between">
+                <span class="small text-light-50 text-uppercase tracking-wider">Warning</span>
+                <div class="d-flex align-items-baseline gap-2 mt-1">
+                    <span class="fs-2 fw-bold text-warning" id="card-warning-services">0</span>
+                    <i class="bi bi-exclamation-circle-fill text-warning fs-4 ms-auto"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Critical Services Card -->
+    <div class="col-6 col-sm-4 col-md-3 col-lg-1-5">
+        <div class="card stat-card bg-navbar border border-dark-30 text-white shadow-sm h-100">
+            <div class="card-body py-3 d-flex flex-column justify-content-between">
+                <span class="small text-light-50 text-uppercase tracking-wider">Critical</span>
+                <div class="d-flex align-items-baseline gap-2 mt-1">
+                    <span class="fs-2 fw-bold text-danger" id="card-critical-services">0</span>
+                    <i class="bi bi-x-circle-fill text-danger fs-4 ms-auto"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Offline Services Card -->
+    <div class="col-6 col-sm-4 col-md-3 col-lg-1-5">
+        <div class="card stat-card bg-navbar border border-dark-30 text-white shadow-sm h-100">
+            <div class="card-body py-3 d-flex flex-column justify-content-between">
+                <span class="small text-light-50 text-uppercase tracking-wider">Offline</span>
+                <div class="d-flex align-items-baseline gap-2 mt-1">
+                    <span class="fs-2 fw-bold text-secondary" id="card-offline-services">0</span>
+                    <i class="bi bi-slash-circle-fill text-secondary fs-4 ms-auto"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Avg Response Latency Card -->
+    <div class="col-6 col-sm-4 col-md-3 col-lg-1-5">
+        <div class="card stat-card bg-navbar border border-dark-30 text-white shadow-sm h-100">
+            <div class="card-body py-3 d-flex flex-column justify-content-between">
+                <span class="small text-light-50 text-uppercase tracking-wider">Latency</span>
+                <div class="d-flex align-items-baseline gap-2 mt-1">
+                    <span class="fs-2 fw-bold text-info" id="card-avg-latency">0</span>
+                    <span class="small text-info">ms</span>
+                    <i class="bi bi-speedometer text-info fs-4 ms-auto"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SRE Host Hardware Cards -->
+<div class="row g-3 mb-4">
+    <!-- CPU Metric Card -->
+    <div class="col-6 col-sm-6 col-md-3">
+        <div class="card metric-card bg-navbar border border-dark-30 text-white shadow-sm">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="metric-icon bg-primary-20 text-primary border border-primary-30">
+                    <i class="bi bi-cpu"></i>
+                </div>
+                <div class="w-100">
+                    <span class="small text-light-50 text-uppercase tracking-wider" style="font-size:0.7rem;">Host CPU</span>
+                    <div class="d-flex justify-content-between align-items-center mt-1">
+                        <span class="fs-4 fw-bold" id="card-cpu-percent">0%</span>
+                        <span class="small text-light-50" id="card-cpu-cores" style="font-size:0.75rem;">0 Cores</span>
+                    </div>
+                    <div class="progress progress-bar-height mt-1 bg-dark-20">
+                        <div class="progress-bar bg-primary" id="bar-cpu" role="progressbar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RAM Metric Card -->
+    <div class="col-6 col-sm-6 col-md-3">
+        <div class="card metric-card bg-navbar border border-dark-30 text-white shadow-sm">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="metric-icon bg-success-20 text-success border border-success-30">
+                    <i class="bi bi-memory"></i>
+                </div>
+                <div class="w-100">
+                    <span class="small text-light-50 text-uppercase tracking-wider" style="font-size:0.7rem;">Host RAM</span>
+                    <div class="d-flex justify-content-between align-items-center mt-1">
+                        <span class="fs-4 fw-bold" id="card-ram-percent">0%</span>
+                        <span class="small text-light-50" id="card-ram-used" style="font-size:0.75rem;">0 / 0 GB</span>
+                    </div>
+                    <div class="progress progress-bar-height mt-1 bg-dark-20">
+                        <div class="progress-bar bg-success" id="bar-ram" role="progressbar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Disk Metric Card -->
+    <div class="col-6 col-sm-6 col-md-3">
+        <div class="card metric-card bg-navbar border border-dark-30 text-white shadow-sm">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="metric-icon bg-warning-20 text-warning border border-warning-30">
+                    <i class="bi bi-hdd-fill"></i>
+                </div>
+                <div class="w-100">
+                    <span class="small text-light-50 text-uppercase tracking-wider" style="font-size:0.7rem;">Host Disk</span>
+                    <div class="d-flex justify-content-between align-items-center mt-1">
+                        <span class="fs-4 fw-bold" id="card-disk-percent">0%</span>
+                        <span class="small text-light-50" id="card-disk-used" style="font-size:0.75rem;">0 / 0 GB</span>
+                    </div>
+                    <div class="progress progress-bar-height mt-1 bg-dark-20">
+                        <div class="progress-bar bg-warning" id="bar-disk" role="progressbar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Network Bandwidth Card -->
+    <div class="col-6 col-sm-6 col-md-3">
+        <div class="card metric-card bg-navbar border border-dark-30 text-white shadow-sm">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="metric-icon bg-info-20 text-info border border-info-30">
+                    <i class="bi bi-arrows-up-down"></i>
+                </div>
+                <div class="w-100">
+                    <span class="small text-light-50 text-uppercase tracking-wider" style="font-size:0.7rem;">Host Network</span>
+                    <div class="d-flex justify-content-between align-items-center mt-1">
+                        <span class="fs-4 fw-bold text-truncate" id="card-net-io" style="font-size: 0.95rem;">0 / 0 MB</span>
+                    </div>
+                    <span class="small text-light-50 mt-1 d-block" id="card-net-uptime" style="font-size:0.7rem;">Boot: N/A</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SRE Charts Row -->
+<div class="row g-4 mb-4">
+    <!-- Left Column: Graph Visualizations -->
+    <div class="col-12 col-xl-9">
+        <div class="card border border-dark-30 bg-navbar shadow-sm p-4">
+            <h5 class="card-title text-white mb-4 fw-bold d-flex align-items-center gap-2">
+                <i class="bi bi-graph-up-arrows text-primary"></i>
+                <span>Telemetry Visualizations</span>
+            </h5>
+            <div class="row g-3">
+                <!-- Latency Graph -->
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="chart-card bg-dark-20 border border-dark-30 rounded p-3 h-100">
+                        <span class="small text-light-50 text-uppercase tracking-wider mb-2 d-block">Service Latencies</span>
+                        <div style="height: 180px;"><canvas id="chart-latency"></canvas></div>
+                    </div>
+                </div>
+                <!-- CPU Graph -->
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="chart-card bg-dark-20 border border-dark-30 rounded p-3 h-100">
+                        <span class="small text-light-50 text-uppercase tracking-wider mb-2 d-block">CPU Utilization %</span>
+                        <div style="height: 180px;"><canvas id="chart-cpu"></canvas></div>
+                    </div>
+                </div>
+                <!-- RAM Graph -->
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="chart-card bg-dark-20 border border-dark-30 rounded p-3 h-100">
+                        <span class="small text-light-50 text-uppercase tracking-wider mb-2 d-block">Memory Utilization %</span>
+                        <div style="height: 180px;"><canvas id="chart-ram"></canvas></div>
+                    </div>
+                </div>
+                <!-- Availability -->
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="chart-card bg-dark-20 border border-dark-30 rounded p-3 h-100">
+                        <span class="small text-light-50 text-uppercase tracking-wider mb-2 d-block">Availability Trends</span>
+                        <div style="height: 180px;"><canvas id="chart-availability"></canvas></div>
+                    </div>
+                </div>
+                <!-- Status Distribution -->
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="chart-card bg-dark-20 border border-dark-30 rounded p-3 h-100">
+                        <span class="small text-light-50 text-uppercase tracking-wider mb-2 d-block">Status Allocation</span>
+                        <div style="height: 180px;" class="d-flex align-items-center justify-content-center">
+                            <canvas id="chart-distribution" style="max-height:160px; max-width:160px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <!-- RPM Requests Rate -->
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="chart-card bg-dark-20 border border-dark-30 rounded p-3 h-100">
+                        <span class="small text-light-50 text-uppercase tracking-wider mb-2 d-block">Requests Per Minute (RPM)</span>
+                        <div style="height: 180px;"><canvas id="chart-rpm"></canvas></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: SRE Active Alerts Panel -->
+    <div class="col-12 col-xl-3">
+        <div class="card border border-dark-30 bg-navbar shadow-sm h-100 d-flex flex-column" style="max-height: 520px;">
+            <div class="card-header border-bottom border-dark-30 bg-navbar py-3 px-4 d-flex align-items-center justify-content-between">
+                <h5 class="card-title text-white m-0 fw-bold d-flex align-items-center gap-2">
+                    <i class="bi bi-bell-fill text-warning animate-bell"></i>
+                    <span>Alerts Panel</span>
+                </h5>
+                <span class="badge bg-danger animate-pulse" id="alert-active-badge">0 Active</span>
+            </div>
+            <!-- Alert List Feed -->
+            <div class="card-body p-3 overflow-y-auto flex-grow-1" id="alerts-panel-body">
+                <div class="text-center text-light-50 py-5" id="alerts-empty-state">
+                    <i class="bi bi-shield-check fs-2 text-success"></i>
+                    <p class="small mt-2">Zero active service warnings or errors detected.</p>
+                </div>
+                <div class="alerts-feed d-flex flex-column gap-2" id="alerts-timeline-container">
+                    <!-- Loaded dynamically via js -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SRE Target Nodes Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card border border-dark-30 bg-navbar shadow-sm">
+            <div class="card-header border-bottom border-dark-30 bg-navbar py-3 px-4 d-flex align-items-center justify-content-between">
+                <h5 class="card-title text-white m-0 fw-bold d-flex align-items-center gap-2">
+                    <i class="bi bi-hdd-stack text-primary"></i>
+                    <span>Target Microservices</span>
+                </h5>
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1.5 transition-all" id="btn-restart-scheduler" title="Force check schedule cycle">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        <span>Restart Checks</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover table-striped align-middle mb-0" id="services-table">
+                        <thead>
+                            <tr class="table-header-style">
+                                <th class="ps-4">Service</th>
+                                <th>Environment</th>
+                                <th>Address Coordinates</th>
+                                <th>Status</th>
+                                <th>Response Latency</th>
+                                <th>Last 20 Checks</th>
+                                <th>Uptime Status</th>
+                                <th class="pe-4 text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="services-tbody">
+                            <tr>
+                                <td colspan="8" class="text-center text-light-50 py-5">
+                                    <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                                    Scanning cluster configurations...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Modular dashboard JavaScript loading -->
+<script src="/static/js/dashboard.js"></script>
+{% endblock %}
