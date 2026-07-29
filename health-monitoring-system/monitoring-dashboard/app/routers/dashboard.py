@@ -19,6 +19,7 @@ templates = Jinja2Templates(directory="app/templates")
 @router.get("/", response_class=HTMLResponse)
 def render_dashboard(
     request: Request, 
+    db: Session = Depends(get_db),
     current_user = Depends(get_current_user_optional)
 ):
     """
@@ -28,12 +29,15 @@ def render_dashboard(
     if not current_user:
         return RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
         
+    summary = DashboardService.get_dashboard_summary(db)
+
     return templates.TemplateResponse(
         "dashboard.html", 
         {
             "request": request, 
             "app_name": "SRE Monitoring",
-            "user": current_user
+            "user": current_user,
+            "summary": summary
         }
     )
 

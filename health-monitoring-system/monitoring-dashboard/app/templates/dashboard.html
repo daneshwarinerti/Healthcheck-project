@@ -13,7 +13,7 @@
             <span>Active Targets</span>
             <i data-lucide="network" style="color: var(--grafana-blue);"></i>
         </div>
-        <div class="kpi-value" id="card-total-services">0</div>
+        <div class="kpi-value" id="card-total-services">{{ summary.total_services if summary else 0 }}</div>
         <div class="kpi-subtext">Configured monitoring nodes</div>
     </div>
     
@@ -23,7 +23,7 @@
             <span>Healthy</span>
             <i data-lucide="check-circle-2" style="color: var(--grafana-green);"></i>
         </div>
-        <div class="kpi-value text-success" id="card-healthy-services">0</div>
+        <div class="kpi-value text-success" id="card-healthy-services">{{ summary.healthy_services if summary else 0 }}</div>
         <div class="kpi-subtext">Online & responding</div>
     </div>
     
@@ -33,7 +33,7 @@
             <span>Warning</span>
             <i data-lucide="help-circle" style="color: var(--grafana-yellow);"></i>
         </div>
-        <div class="kpi-value text-warning" id="card-warning-services">0</div>
+        <div class="kpi-value text-warning" id="card-warning-services">{{ summary.warning_services if summary else 0 }}</div>
         <div class="kpi-subtext">Degraded performance</div>
     </div>
     
@@ -43,7 +43,7 @@
             <span>Critical & Offline</span>
             <i data-lucide="alert-circle" style="color: var(--grafana-red);"></i>
         </div>
-        <div class="kpi-value text-danger" id="card-critical-offline-services">0</div>
+        <div class="kpi-value text-danger" id="card-critical-offline-services">{{ (summary.critical_services + summary.offline_services) if summary else 0 }}</div>
         <div class="kpi-subtext">Connection or status issues</div>
     </div>
 
@@ -54,7 +54,7 @@
             <i data-lucide="activity" style="color: var(--grafana-cyan);"></i>
         </div>
         <div class="kpi-value text-info">
-            <span id="card-avg-latency">0</span><span style="font-size: 0.95rem; font-weight: normal; margin-left: 2px;">ms</span>
+            <span id="card-avg-latency">{{ summary.avg_response_time if summary else 0 }}</span><span style="font-size: 0.95rem; font-weight: normal; margin-left: 2px;">ms</span>
         </div>
         <div class="kpi-subtext">Mean round-trip response time</div>
     </div>
@@ -68,12 +68,12 @@
             <div>
                 <div class="d-flex justify-content-between align-items-center mb-1.5">
                     <span class="form-label-enterprise m-0" style="font-size:0.68rem;">Host CPU Load</span>
-                    <span class="badge text-primary small" style="background-color: var(--primary-glow); font-size:0.7rem;" id="card-cpu-cores">0 Cores</span>
+                    <span class="badge text-primary small" style="background-color: var(--primary-glow); font-size:0.7rem;" id="card-cpu-cores">{{ summary.system.cpu_cores if summary else 0 }} Cores</span>
                 </div>
-                <div class="kpi-value m-0 fs-3" id="card-cpu-percent">0%</div>
+                <div class="kpi-value m-0 fs-3" id="card-cpu-percent">{{ summary.system.cpu_percent if summary else 0 }}%</div>
             </div>
             <div class="progress mt-2" style="height: 4px; background-color: rgba(255,255,255,0.05); border-radius: 2px;">
-                <div class="progress-bar" id="bar-cpu" role="progressbar" style="width: 0%; background-color: var(--grafana-blue);"></div>
+                <div class="progress-bar" id="bar-cpu" role="progressbar" style="width: {{ summary.system.cpu_percent if summary else 0 }}%; background-color: var(--grafana-blue);"></div>
             </div>
         </div>
     </div>
@@ -84,12 +84,12 @@
             <div>
                 <div class="d-flex justify-content-between align-items-center mb-1.5">
                     <span class="form-label-enterprise m-0" style="font-size:0.68rem;">Host RAM Load</span>
-                    <span class="text-muted small font-monospace" id="card-ram-used" style="font-size:0.7rem;">0 / 0 GB</span>
+                    <span class="text-muted small font-monospace" id="card-ram-used" style="font-size:0.7rem;">{{ summary.system.memory_used_gb if summary else 0 }} / {{ summary.system.memory_total_gb if summary else 0 }} GB</span>
                 </div>
-                <div class="kpi-value m-0 fs-3" id="card-ram-percent">0%</div>
+                <div class="kpi-value m-0 fs-3" id="card-ram-percent">{{ summary.system.memory_percent if summary else 0 }}%</div>
             </div>
             <div class="progress mt-2" style="height: 4px; background-color: rgba(255,255,255,0.05); border-radius: 2px;">
-                <div class="progress-bar" id="bar-ram" role="progressbar" style="width: 0%; background-color: var(--grafana-green);"></div>
+                <div class="progress-bar" id="bar-ram" role="progressbar" style="width: {{ summary.system.memory_percent if summary else 0 }}%; background-color: var(--grafana-green);"></div>
             </div>
         </div>
     </div>
@@ -100,12 +100,12 @@
             <div>
                 <div class="d-flex justify-content-between align-items-center mb-1.5">
                     <span class="form-label-enterprise m-0" style="font-size:0.68rem;">Host Storage</span>
-                    <span class="text-muted small font-monospace" id="card-disk-used" style="font-size:0.7rem;">0 / 0 GB</span>
+                    <span class="text-muted small font-monospace" id="card-disk-used" style="font-size:0.7rem;">{{ summary.system.disk_used_gb if summary else 0 }} / {{ summary.system.disk_total_gb if summary else 0 }} GB</span>
                 </div>
-                <div class="kpi-value m-0 fs-3" id="card-disk-percent">0%</div>
+                <div class="kpi-value m-0 fs-3" id="card-disk-percent">{{ summary.system.disk_percent if summary else 0 }}%</div>
             </div>
             <div class="progress mt-2" style="height: 4px; background-color: rgba(255,255,255,0.05); border-radius: 2px;">
-                <div class="progress-bar" id="bar-disk" role="progressbar" style="width: 0%; background-color: var(--grafana-yellow);"></div>
+                <div class="progress-bar" id="bar-disk" role="progressbar" style="width: {{ summary.system.disk_percent if summary else 0 }}%; background-color: var(--grafana-yellow);"></div>
             </div>
         </div>
     </div>
