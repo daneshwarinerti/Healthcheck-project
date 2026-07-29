@@ -5,6 +5,7 @@ Router defining REST API endpoints for liveness probes and psutil telemetry.
 import logging
 from typing import Dict, Any, List
 from fastapi import APIRouter, Depends, status
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app import schemas
@@ -26,7 +27,7 @@ def system_health_probe(db: Session = Depends(get_db)) -> Dict[str, str]:
     Checks database connection health.
     """
     try:
-        db.execute("SELECT 1")
+        db.execute(text("SELECT 1"))
         return {"status": "healthy", "database": "connected"}
     except Exception as ex:
         logger.error(f"Liveness health probe failure: {str(ex)}")

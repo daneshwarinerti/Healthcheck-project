@@ -4,6 +4,7 @@ Router defining monitoring, health probes, dashboard metrics, and Prometheus scr
 
 import logging
 from fastapi import APIRouter, Depends, Response, status
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app import schemas
@@ -26,7 +27,7 @@ def health_check(db: Session = Depends(get_db)) -> dict:
     logger.info("GET /health - Liveness/Readiness probe trigger")
     try:
         # Verify db responsiveness
-        db.execute("SELECT 1")
+        db.execute(text("SELECT 1"))
         return {"status": "healthy", "database": "connected"}
     except Exception as e:
         logger.error(f"Health check failed database check: {str(e)}", exc_info=True)

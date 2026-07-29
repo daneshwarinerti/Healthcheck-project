@@ -16,13 +16,24 @@ if not os.path.exists(env_filename) and os.path.exists(".env"):
 
 class Settings(BaseSettings):
     """
-    Application settings loaded from the environment-specific .env file.
+    Application settings loaded from environment variables and config files.
     """
     APP_NAME: str = "Health Monitoring Dashboard"
-    DATABASE_URL: str = "sqlite:///./health.db"
+    DATABASE_URL: str = "postgresql://postgres:postgres123@postgres:5432/healthdb"
     SECRET_KEY: str = "super-secret-key-development-only-change-this-in-production-123456"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 120
     CORS_ORIGINS: List[str] = ["*"]
+
+    POSTGRES_HOST: str = "postgres"
+    POSTGRES_PORT: int = 5432
+    REDIS_HOST: str = "redis"
+    REDIS_PORT: int = 6379
+    RABBITMQ_HOST: str = "rabbitmq"
+    RABBITMQ_PORT: int = 5672
+
+    USER_SERVICE_URL: str = "http://user-service:8001/health"
+    PAYMENT_SERVICE_URL: str = "http://payment-service:8002/health"
+    NOTIFICATION_SERVICE_URL: str = "http://notification-service:8003/health"
 
     model_config = SettingsConfigDict(
         env_file=env_filename,
@@ -39,8 +50,8 @@ class Settings(BaseSettings):
         dotenv_settings,
         file_secret_settings,
     ):
-        # Prioritize local dotenv settings files over global system environment variables
-        return (init_settings, dotenv_settings, env_settings, file_secret_settings)
+        # Prioritize system environment variables over local dotenv settings files
+        return (init_settings, env_settings, dotenv_settings, file_secret_settings)
 
 settings = Settings()
 print(f"Config: Initialized settings using configuration file: '{env_filename}'")

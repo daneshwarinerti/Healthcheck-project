@@ -57,13 +57,20 @@ def seed_db() -> None:
             app_logger.info(f"Seeder: Operator '{op_email}' already exists.")
 
         # 3. Seed Default Monitored Services configurations
+        user_svc_url = os.getenv("USER_SERVICE_URL", "http://user-service:8001/health")
+        payment_svc_url = os.getenv("PAYMENT_SERVICE_URL", "http://payment-service:8002/health")
+        notification_svc_url = os.getenv("NOTIFICATION_SERVICE_URL", "http://notification-service:8003/health")
+        postgres_svc_url = os.getenv("POSTGRES_HEALTH_URL", "postgres:5432")
+        redis_svc_url = os.getenv("REDIS_HEALTH_URL", "redis:6379")
+        rabbitmq_svc_url = os.getenv("RABBITMQ_HEALTH_URL", "rabbitmq:5672")
+
         default_services = [
             {
                 "name": "User Service",
                 "description": "User profile management and identity validation API microservice.",
                 "environment": "Production",
-                "health_url": "http://localhost:8001/health",
-                "ip_address": "127.0.0.1",
+                "health_url": user_svc_url,
+                "ip_address": "user-service",
                 "port": 8001,
                 "response_time_threshold": 1000
             },
@@ -71,8 +78,8 @@ def seed_db() -> None:
                 "name": "Payment Service",
                 "description": "Financial transaction ledger and stripe payment gateways portal.",
                 "environment": "Production",
-                "health_url": "http://localhost:8002/health",
-                "ip_address": "127.0.0.1",
+                "health_url": payment_svc_url,
+                "ip_address": "payment-service",
                 "port": 8002,
                 "response_time_threshold": 1000
             },
@@ -80,8 +87,8 @@ def seed_db() -> None:
                 "name": "Notification Service",
                 "description": "E-mail dispatches, Slack notifications and SMS broadcast API.",
                 "environment": "Production",
-                "health_url": "http://localhost:8003/health",
-                "ip_address": "127.0.0.1",
+                "health_url": notification_svc_url,
+                "ip_address": "notification-service",
                 "port": 8003,
                 "response_time_threshold": 1000
             },
@@ -89,8 +96,8 @@ def seed_db() -> None:
                 "name": "PostgreSQL Database",
                 "description": "Primary relational storage database server cluster.",
                 "environment": "Production",
-                "health_url": "localhost:5432",
-                "ip_address": "127.0.0.1",
+                "health_url": postgres_svc_url,
+                "ip_address": "postgres",
                 "port": 5432,
                 "response_time_threshold": 500
             },
@@ -98,8 +105,8 @@ def seed_db() -> None:
                 "name": "Redis Broker",
                 "description": "Distributed cache memory database and locks synchronization server.",
                 "environment": "Production",
-                "health_url": "localhost:6379",
-                "ip_address": "127.0.0.1",
+                "health_url": redis_svc_url,
+                "ip_address": "redis",
                 "port": 6379,
                 "response_time_threshold": 200
             },
@@ -107,8 +114,8 @@ def seed_db() -> None:
                 "name": "RabbitMQ Queue",
                 "description": "Asynchronous messaging queue and tasks worker broker.",
                 "environment": "Production",
-                "health_url": "localhost:5672",
-                "ip_address": "127.0.0.1",
+                "health_url": rabbitmq_svc_url,
+                "ip_address": "rabbitmq",
                 "port": 5672,
                 "response_time_threshold": 800
             }
@@ -131,7 +138,13 @@ def seed_db() -> None:
                 )
                 db.add(new_svc)
             else:
-                app_logger.info(f"Seeder: Service '{svc_data['name']}' already registered.")
+                # Update existing service health_url if it currently uses localhost
+                if "localhost" in existing_svc.health_url or existing_svc.ip_address == "127.0.0.1":
+                    existing_svc.health_url = svc_data["health_url"]
+                    existing_svc.ip_address = svc_data["ip_address"]
+                    app_logger.info(f"Seeder: Updated Service '{svc_data['name']}' URL to '{svc_data['health_url']}'.")
+                else:
+                    app_logger.info(f"Seeder: Service '{svc_data['name']}' already registered.")
                 
         db.commit()
         app_logger.info("Seeder: Seeding sequence finished successfully.")

@@ -1,0 +1,46 @@
+services:
+  monitoring-dashboard:
+    build:
+      context: ./health-monitoring-system/monitoring-dashboard
+      dockerfile: Dockerfile
+    container_name: monitoring-dashboard
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_ENV=production
+    depends_on:
+      - user-service
+      - payment-service
+      - notification-service
+    restart: always
+    image: monitoring-dashboard:v1
+
+  user-service:
+    build:
+      context: ./health-monitoring-system/user-service
+      dockerfile: Dockerfile
+    container_name: user-service
+    ports:
+      - "8001:8001"
+    restart: always
+    image: user-service:v1
+
+  payment-service:
+    build:
+      context: ./health-monitoring-system/payment-service
+      dockerfile: Dockerfile
+    container_name: payment-service
+    ports:
+      - "8002:8002"
+    restart: always
+    image: payment-service:v1
+
+  notification-service:
+    build:
+      context: ./health-monitoring-system/notification-service
+      dockerfile: Dockerfile
+    container_name: notification-service
+    ports:
+      - "8003:8003"
+    restart: always
+    image: notification-service:v1
