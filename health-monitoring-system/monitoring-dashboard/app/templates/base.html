@@ -61,13 +61,13 @@
             
             <div class="sidebar-footer-panel">
                 <div class="dropdown">
-                    <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle gap-2.5" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
-                        <div class="user-avatar text-white" style="background-color: var(--grafana-blue);">
+                    <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="user-avatar me-2">
                             {{ user.first_name[0] | upper }}{{ user.last_name[0] | upper }}
                         </div>
-                        <div class="d-flex flex-column text-start" style="font-size: 0.8rem; min-width: 0;">
-                            <span class="fw-semibold text-truncate" style="max-width: 110px;">{{ user.first_name }} {{ user.last_name }}</span>
-                            <span class="text-muted text-truncate" style="font-size: 0.68rem;">{{ user.role }}</span>
+                        <div class="d-flex flex-column text-start me-auto" style="font-size: 0.8rem; min-width: 0; flex: 1;">
+                            <span class="fw-semibold text-truncate text-white" style="max-width: 115px; line-height: 1.2;">{{ user.first_name }} {{ user.last_name }}</span>
+                            <span class="text-muted text-truncate" style="font-size: 0.68rem; line-height: 1.2;">{{ user.role }}</span>
                         </div>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser" style="background-color: #181b1f; border: 1px solid #22252b;">
