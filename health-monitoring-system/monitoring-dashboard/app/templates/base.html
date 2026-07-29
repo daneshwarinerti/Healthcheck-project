@@ -18,7 +18,7 @@
     {% if user %}
     <!-- Authenticated App Shell -->
     <div class="app-shell">
-        <!-- Sidebar -->
+        <!-- Sidebar Navigation -->
         <aside class="sidebar-panel" id="app-sidebar">
             <div class="sidebar-header">
                 <i data-lucide="activity" style="color: var(--grafana-orange);"></i>
@@ -122,13 +122,15 @@
 
             <!-- Scroll Container -->
             <main class="scrollable-content">
-                {% block content %}{% endblock %}
+    {% endif %}
+
+    <!-- Content Block (Single declaration in template) -->
+    {% block content %}{% endblock %}
+
+    {% if user %}
             </main>
         </div>
     </div>
-    {% else %}
-    <!-- Unauthenticated Full-Screen Layout (Login / Register) -->
-    {% block content %}{% endblock %}
     {% endif %}
 
     <!-- Toast Notification Container -->
