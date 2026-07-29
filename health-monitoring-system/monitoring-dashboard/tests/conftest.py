@@ -19,12 +19,12 @@ from app.main import app
 from app.database.session import Base
 from app.dependencies import get_db
 from fastapi.testclient import TestClient
+from app.core.config import settings
 
 # SQLite test database file path
 TEST_DB_FILE = "./test_health.db"
-SQLALCHEMY_DATABASE_URL = f"sqlite:///{TEST_DB_FILE}"
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+engine = create_engine(settings.DATABASE_URL, connect_args={"check_same_thread": False})
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 @pytest.fixture(scope="session", autouse=True)
