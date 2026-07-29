@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-service-configmap
+  namespace: health-monitoring
+  labels:
+    app.kubernetes.io/name: user-service
+    app.kubernetes.io/component: microservice
+data:
+  APP_ENV: "production"
+  PORT: "8001"

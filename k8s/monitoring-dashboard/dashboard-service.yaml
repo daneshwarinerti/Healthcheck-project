@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: monitoring-dashboard
+  namespace: health-monitoring
+  labels:
+    app.kubernetes.io/name: monitoring-dashboard
+    app.kubernetes.io/component: dashboard
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8000
+      targetPort: 8000
+      name: http
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: monitoring-dashboard

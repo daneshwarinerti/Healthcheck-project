@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq
+  namespace: health-monitoring
+  labels:
+    app.kubernetes.io/name: rabbitmq
+    app.kubernetes.io/component: broker
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5672
+      targetPort: 5672
+      name: amqp
+      protocol: TCP
+    - port: 15672
+      targetPort: 15672
+      name: http-mgmt
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: rabbitmq

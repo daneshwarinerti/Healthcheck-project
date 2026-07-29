@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: payment-service-configmap
+  namespace: health-monitoring
+  labels:
+    app.kubernetes.io/name: payment-service
+    app.kubernetes.io/component: microservice
+data:
+  APP_ENV: "production"
+  PORT: "8002"
