@@ -306,17 +306,17 @@ document.addEventListener("DOMContentLoaded", () => {
             // Actions HTML
             let actionsHtml = `
                 <div class="action-cell">
-                    <button class="btn-icon btn-table-check" data-id="${s.id}" title="Trigger Probe Check"><i data-lucide="refresh-cw"></i></button>
+                    <button class="btn-sre-icon btn-table-check" data-id="${s.id}" title="Trigger Probe Check"><i data-lucide="refresh-cw"></i></button>
             `;
             if (userRole === "Admin" || userRole === "Operator") {
                 actionsHtml += `
-                    <button class="btn-icon btn-table-ack text-warning" data-id="${s.id}" title="Acknowledge Alerts"><i data-lucide="shield-alert"></i></button>
+                    <button class="btn-sre-icon btn-table-ack text-warning" data-id="${s.id}" title="Acknowledge Alerts"><i data-lucide="shield-alert"></i></button>
                 `;
             }
             if (userRole === "Admin") {
                 actionsHtml += `
-                    <a href="/services/${s.id}/edit" class="btn-icon text-secondary" title="Edit Configuration"><i data-lucide="settings"></i></a>
-                    <button class="btn-icon text-danger btn-table-delete" data-id="${s.id}" data-name="${s.name}" title="Remove Node"><i data-lucide="trash-2"></i></button>
+                    <a href="/services/${s.id}/edit" class="btn-sre-icon text-secondary" title="Edit Configuration"><i data-lucide="settings"></i></a>
+                    <button class="btn-sre-icon text-danger btn-table-delete" data-id="${s.id}" data-name="${s.name}" title="Remove Node"><i data-lucide="trash-2"></i></button>
                 `;
             }
             actionsHtml += `</div>`;
@@ -567,12 +567,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
 
                 <div class="d-flex gap-2">
-                    <button class="btn-primary-enterprise flex-grow-1 py-2 d-flex align-items-center justify-content-center gap-1.5" id="drawer-btn-check" data-id="${s.id}">
+                    <button class="btn-sre btn-sre-primary flex-grow-1 py-2 d-flex align-items-center justify-content-center gap-1.5" id="drawer-btn-check" data-id="${s.id}">
                         <i data-lucide="refresh-cw" style="width: 15px; height: 15px;"></i>
                         <span>Run Probe</span>
                     </button>
                     ${(userRole === 'Admin' || userRole === 'Operator') ? `
-                    <button class="btn-icon text-warning py-2 w-25 btn-table-ack" data-id="${s.id}" style="height:38px;" title="Acknowledge Alert">
+                    <button class="btn-sre-icon text-warning py-2 w-25 btn-table-ack" data-id="${s.id}" style="height:38px;" title="Acknowledge Alert">
                         <i data-lucide="shield-alert"></i>
                     </button>
                     ` : ''}

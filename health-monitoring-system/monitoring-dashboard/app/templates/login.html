@@ -3,61 +3,96 @@
 {% block title %}Sign In - {{ app_name }}{% endblock %}
 
 {% block content %}
-<div class="auth-page-wrapper p-3">
-    <div class="row w-100 justify-content-center">
-        <div class="col-md-5 col-lg-4">
-            <div class="card auth-card border-0">
-                <div class="card-body p-4 p-md-5">
-                    <!-- Header -->
-                    <div class="text-center mb-4">
-                        <div class="auth-icon-wrapper mb-3 mx-auto bg-dark-20 border border-dark-30">
-                            <i class="bi bi-shield-lock-fill text-primary"></i>
-                        </div>
-                        <h2 class="auth-title fw-bold text-white fs-4">SRE Monitoring Portal</h2>
-                        <p class="auth-subtitle text-light-50 small m-0">Authenticate to view live configurations</p>
-                    </div>
+</div> <!-- Close scrollable content to breakout of base.html structure for full-screen auth -->
+</div> <!-- Close main container -->
+</div> <!-- Close app-shell -->
 
-                    <!-- Error Alert -->
-                    <div id="error-alert" class="alert alert-danger d-none shadow-sm small py-2.5 px-3 mb-4" role="alert">
-                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                        <span id="error-message">Invalid credentials</span>
-                    </div>
-
-                    <!-- Login Form -->
-                    <form id="login-form">
-                        <div class="mb-3">
-                            <label for="email" class="form-label text-light-50 small fw-medium text-uppercase tracking-wider">Email Address</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                                <input type="email" class="form-control" id="email" placeholder="operator@example.com" required autocomplete="email">
-                            </div>
-                        </div>
-                        <div class="mb-4">
-                            <label for="password" class="form-label text-light-50 small fw-medium text-uppercase tracking-wider">Password</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-key"></i></span>
-                                <input type="password" class="form-control" id="password" placeholder="Enter password" required autocomplete="current-password">
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100 py-2.5 fw-semibold transition-all d-flex align-items-center justify-content-center gap-2" id="login-submit-btn">
-                            <span class="spinner-border spinner-border-sm d-none" id="login-spinner" role="status" aria-hidden="true"></span>
-                            <span id="login-btn-text">Sign In</span>
-                            <i class="bi bi-arrow-right" id="login-btn-icon"></i>
-                        </button>
-                    </form>
-
-                    <!-- Sign up redirect -->
-                    <div class="text-center mt-4 border-top border-dark-30 pt-3">
-                        <span class="text-light-50 small">New user? </span>
-                        <a href="/register" class="text-decoration-none text-primary small fw-semibold hover-white">
-                            Register Account
-                        </a>
-                    </div>
+<div class="auth-split-wrapper">
+    <!-- Left Panel: Brand & Feature Highlights -->
+    <div class="auth-split-left">
+        <div class="mb-5 d-flex align-items-center gap-2">
+            <i data-lucide="activity" class="text-primary animate-pulse" style="width: 32px; height: 32px; stroke-width: 2.5;"></i>
+            <span class="fs-4 fw-bold text-white tracking-wider">SRE MONITOR</span>
+        </div>
+        
+        <h1 class="text-white fw-bold mb-3" style="font-size: 2.2rem; line-height: 1.2;">
+            Enterprise-grade infrastructure health monitoring
+        </h1>
+        <p class="text-secondary mb-4" style="max-width: 480px; font-size: 1rem; line-height: 1.5;">
+            Collect logs, track CPU & RAM thresholds, query service latencies, and receive instant alert notifications inside a single secure console.
+        </p>
+        
+        <ul class="auth-feature-list">
+            <li class="auth-feature-item">
+                <i data-lucide="shield-check"></i>
+                <div>
+                    <strong class="text-white d-block mb-0.5">Role-Based Access Control</strong>
+                    Enforce strict authorization tiers for Viewers, Operators, and Administrators.
                 </div>
+            </li>
+            <li class="auth-feature-item">
+                <i data-lucide="gauge"></i>
+                <div>
+                    <strong class="text-white d-block mb-0.5">Real-time Telemetry Graphs</strong>
+                    Inspect system metrics and latency trend line plots with zero configuration.
+                </div>
+            </li>
+            <li class="auth-feature-item">
+                <i data-lucide="terminal"></i>
+                <div>
+                    <strong class="text-white d-block mb-0.5">Logs Ledger Explorer</strong>
+                    Aggregate health checks, system processes, and admin audits in one clean console.
+                </div>
+            </li>
+        </ul>
+    </div>
+    
+    <!-- Right Panel: Login Card Form -->
+    <div class="auth-split-right">
+        <div class="auth-card-enterprise">
+            <div class="mb-4">
+                <h2 class="auth-title">Authenticate Portal</h2>
+                <p class="auth-subtitle">Provide your operator credentials to continue</p>
+            </div>
+
+            <!-- Error Alert -->
+            <div id="error-alert" class="alert alert-danger d-none shadow-sm small py-2.5 px-3 mb-4" role="alert" style="background-color: rgba(239, 68, 68, 0.12); border-color: rgba(239, 68, 68, 0.2); color: #f87171;">
+                <i data-lucide="alert-triangle" class="me-2" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle;"></i>
+                <span id="error-message" style="vertical-align: middle;"></span>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form">
+                <div class="form-group-enterprise mb-3">
+                    <label for="email" class="form-label-enterprise">Email Address</label>
+                    <input type="email" class="form-control-enterprise" id="email" placeholder="operator@example.com" required autocomplete="email">
+                </div>
+                <div class="form-group-enterprise mb-4">
+                    <label for="password" class="form-label-enterprise">Password</label>
+                    <input type="password" class="form-control-enterprise" id="password" placeholder="Enter password" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn-primary-enterprise w-100 py-2.5 fw-semibold transition-all d-flex align-items-center justify-content-center gap-2" id="login-submit-btn">
+                    <span class="spinner-border spinner-border-sm d-none" id="login-spinner" role="status" aria-hidden="true"></span>
+                    <span id="login-btn-text">Sign In</span>
+                    <i data-lucide="arrow-right" id="login-btn-icon" style="width: 16px; height: 16px;"></i>
+                </button>
+            </form>
+
+            <!-- Sign up redirect -->
+            <div class="text-center mt-4 border-top pt-3" style="border-top-color: var(--border-color) !important;">
+                <span class="text-secondary small">New user? </span>
+                <a href="/register" class="text-decoration-none text-primary small fw-semibold hover-white">
+                    Register SRE Account
+                </a>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Open layout divs back up to ensure HTML remains balanced and doesn't break base template footer -->
+<div class="d-none">
+    <div class="main-container">
+        <main class="scrollable-content">
 {% endblock %}
 
 {% block scripts %}
@@ -106,7 +141,7 @@
                     throw new Error(msg || "Authentication credentials verification failed.");
                 }
 
-                // Store token inside local storage
+                // Store token
                 localStorage.setItem("token", data.access_token);
                 localStorage.setItem("role", data.role);
                 localStorage.setItem("user_email", emailVal);
@@ -115,6 +150,7 @@
             } catch (err) {
                 errorMessage.textContent = err.message;
                 errorAlert.classList.remove("d-none");
+                lucide.createIcons();
                 
                 // Reset loading state
                 submitBtn.disabled = false;
@@ -123,6 +159,8 @@
                 btnIcon.classList.remove("d-none");
             }
         });
+        
+        lucide.createIcons();
     });
 </script>
 {% endblock %}

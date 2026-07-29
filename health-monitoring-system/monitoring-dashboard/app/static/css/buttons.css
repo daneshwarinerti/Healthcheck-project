@@ -1,0 +1,86 @@
+/* SaaS Buttons Stylesheet */
+.btn-sre {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xs);
+    font-size: 0.85rem;
+    font-weight: var(--font-medium);
+    padding: 6px 14px;
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all var(--transition-speed) var(--transition-curve);
+    outline: none;
+    text-decoration: none;
+}
+
+.btn-sre:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+/* Button Variants */
+.btn-sre-primary {
+    background-color: var(--primary);
+    color: #ffffff !important;
+}
+.btn-sre-primary:hover:not(:disabled) {
+    background-color: var(--primary-hover);
+}
+
+.btn-sre-secondary {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary) !important;
+}
+.btn-sre-secondary:hover:not(:disabled) {
+    color: var(--text-primary) !important;
+    border-color: var(--border-hover);
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+.btn-sre-ghost {
+    background-color: transparent;
+    color: var(--text-secondary) !important;
+}
+.btn-sre-ghost:hover:not(:disabled) {
+    color: var(--text-primary) !important;
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+.btn-sre-danger {
+    background-color: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.15);
+    color: var(--danger) !important;
+}
+.btn-sre-danger:hover:not(:disabled) {
+    background-color: var(--danger);
+    color: #ffffff !important;
+    border-color: var(--danger);
+}
+
+/* Icon Buttons */
+.btn-sre-icon {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-input);
+    color: var(--text-secondary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+}
+.btn-sre-icon:hover {
+    color: var(--text-primary);
+    border-color: var(--border-hover);
+    background-color: rgba(255, 255, 255, 0.03);
+}
+.btn-sre-icon svg {
+    width: 15px;
+    height: 15px;
+}

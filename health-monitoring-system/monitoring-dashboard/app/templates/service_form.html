@@ -12,79 +12,156 @@
 <div class="row justify-content-center">
     <div class="col-12 col-md-10 col-lg-8">
         <div class="card-enterprise p-0" style="overflow: hidden;">
+            <!-- Header bar -->
             <div class="py-3 px-4 border-bottom bg-navbar" style="border-bottom-color: var(--border-color) !important;">
                 <h5 class="section-title-sre m-0">
                     <i data-lucide="{% if service %}edit-3{% else %}plus-circle{% endif %}" class="{% if service %}text-warning{% else %}text-primary{% endif %}" style="width: 18px; height: 18px;"></i>
                     <span>{% if service %}Edit '{{ service.name }}' Settings{% else %}New Monitored service endpoint{% endif %}</span>
                 </h5>
             </div>
+            
             <div class="p-4">
+                <!-- Multi-Step Wizard Progress Bar -->
+                <div class="wizard-progress-bar">
+                    <div class="wizard-progress-line" id="wizard-progress-line" style="width: 0%;"></div>
+                    <div class="wizard-node active" id="node-1" data-step="1" title="Basic Info">1</div>
+                    <div class="wizard-node" id="node-2" data-step="2" title="Connection Coordinates">2</div>
+                    <div class="wizard-node" id="node-3" data-step="3" title="Alert Thresholds">3</div>
+                    <div class="wizard-node" id="node-4" data-step="4" title="Verify & Confirm">4</div>
+                </div>
+
+                <div class="d-flex justify-content-between mb-4 px-2 text-muted" style="font-size: 0.65rem; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px;">
+                    <span>1. Basic Info</span>
+                    <span>2. Connection</span>
+                    <span>3. Thresholds</span>
+                    <span>4. Review</span>
+                </div>
+
                 <!-- Validation Error Notification -->
-                <div id="form-error-alert" class="alert alert-danger d-none shadow-sm small py-2.5 px-3 mb-4" role="alert" style="background-color: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.25); color: #f87171;">
-                    <i data-lucide="alert-triangle" class="me-2" style="width: 16px; height: 16px;"></i>
-                    <span id="form-error-message"></span>
+                <div id="form-error-alert" class="alert alert-danger d-none shadow-sm small py-2.5 px-3 mb-4" role="alert" style="background-color: rgba(239, 68, 68, 0.12); border-color: rgba(239, 68, 68, 0.2); color: #f87171;">
+                    <i data-lucide="alert-triangle" class="me-2" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle;"></i>
+                    <span id="form-error-message" style="vertical-align: middle;"></span>
                 </div>
 
                 <form id="service-node-form">
-                    <!-- Name & Environment -->
-                    <div class="row g-3 mb-3">
-                        <div class="col-12 col-md-6">
+                    <!-- ========================================== -->
+                    <!-- STEP 1: Basic Information                  -->
+                    <!-- ========================================== -->
+                    <div class="wizard-section" id="step-section-1">
+                        <h6 class="text-white fw-bold mb-3" style="font-size:0.85rem;">Step 1: Target Identity & Environment</h6>
+                        
+                        <div class="form-group-enterprise mb-3">
                             <label for="name" class="form-label-enterprise">Service Name</label>
-                            <input type="text" class="form-control-enterprise" id="name" required placeholder="e.g. Payment Service" value="{% if service %}{{ service.name }}{% endif %}" {% if service %}disabled{% endif %}>
-                            <div class="text-muted mt-1" style="font-size:0.75rem;">Unique name referencing the microservice node.</div>
+                            <input type="text" class="form-control-enterprise" id="name" required placeholder="e.g. Payment Gateway microservice" value="{% if service %}{{ service.name }}{% endif %}" {% if service %}disabled{% endif %}>
+                            <div class="form-text-muted">Unique name referencing the microservice node.</div>
                         </div>
-                        <div class="col-12 col-md-6">
+
+                        <div class="form-group-enterprise mb-3">
                             <label for="environment" class="form-label-enterprise">Environment Tier</label>
                             <select class="form-select-enterprise pointer" id="environment" required>
-                                <option value="Production" {% if service and service.environment == 'Production' %}selected{% endif %}>Production</option>
+                                <option value="Production" {% if service and service.environment == 'Production' %}selected{% endif %}>Production (Live users cluster)</option>
                                 <option value="Testing" {% if service and service.environment == 'Testing' %}selected{% endif %}>Testing (Staging / QA)</option>
                                 <option value="Development" {% if service and service.environment == 'Development' %}selected{% endif %}>Development</option>
                             </select>
+                            <div class="form-text-muted">Specifies the cluster tier for log filter categorization.</div>
+                        </div>
+
+                        <div class="form-group-enterprise mb-3">
+                            <label for="description" class="form-label-enterprise">Description</label>
+                            <textarea class="form-control-enterprise" id="description" rows="3" placeholder="Brief summary of what this microservice does.">{% if service %}{{ service.description or '' }}{% endif %}</textarea>
                         </div>
                     </div>
 
-                    <!-- Health Endpoint URL -->
-                    <div class="mb-3">
-                        <label for="health_url" class="form-label-enterprise">Health Probe URL / Socket Address</label>
-                        <input type="text" class="form-control-enterprise" id="health_url" required placeholder="e.g. http://localhost:8002/health or localhost:5432" value="{% if service %}{{ service.health_url }}{% endif %}">
-                        <div class="text-muted mt-1" style="font-size:0.75rem;">Specify an HTTP URL endpoint (starts with http:// or https://) or a TCP socket host:port coordinate.</div>
+                    <!-- ========================================== -->
+                    <!-- STEP 2: Connection Coordinates             -->
+                    <!-- ========================================== -->
+                    <div class="wizard-section d-none" id="step-section-2">
+                        <h6 class="text-white fw-bold mb-3" style="font-size:0.85rem;">Step 2: Connection Coordinates</h6>
+                        
+                        <div class="form-group-enterprise mb-3">
+                            <label for="health_url" class="form-label-enterprise">Health Probe URL / Socket Address</label>
+                            <input type="text" class="form-control-enterprise" id="health_url" required placeholder="e.g. http://10.0.4.15:8002/health or localhost:5432" value="{% if service %}{{ service.health_url }}{% endif %}">
+                            <div class="form-text-muted">Specify an HTTP/HTTPS URL endpoint (starts with http:// or https://) or a TCP socket host:port coordinate.</div>
+                        </div>
                     </div>
 
-                    <!-- Description -->
-                    <div class="mb-3">
-                        <label for="description" class="form-label-enterprise">Description</label>
-                        <textarea class="form-control-enterprise" id="description" rows="2" placeholder="Brief summary of what this microservice does.">{% if service %}{{ service.description or '' }}{% endif %}</textarea>
-                    </div>
-
-                    <!-- Custom Alarm Thresholds -->
-                    <div class="border-top my-4 pt-3" style="border-top-color: var(--border-color) !important;">
-                        <h6 class="text-white fw-bold mb-3 text-uppercase tracking-wider" style="font-size: 0.78rem; letter-spacing: 0.5px;">SRE Alert Thresholds Settings</h6>
+                    <!-- ========================================== -->
+                    <!-- STEP 3: Alarm Thresholds                   -->
+                    <!-- ========================================== -->
+                    <div class="wizard-section d-none" id="step-section-3">
+                        <h6 class="text-white fw-bold mb-3" style="font-size:0.85rem;">Step 3: Alert Alarm Thresholds</h6>
                         
                         <div class="row g-3">
-                            <div class="col-12 col-md-4">
-                                <label for="response_time_threshold" class="form-label-enterprise">Max Latency Limit (ms)</label>
-                                <input type="number" class="form-control-enterprise" id="response_time_threshold" required min="10" max="30000" value="{% if service %}{{ service.response_time_threshold }}{% else %}1000{% endif %}">
-                                <div class="text-muted mt-1" style="font-size:0.7rem;">Alerts if probe response time exceeds this latency limit (Default: 1000ms).</div>
+                            <div class="col-12">
+                                <div class="form-group-enterprise mb-3">
+                                    <label for="response_time_threshold" class="form-label-enterprise">Max Latency Limit (ms)</label>
+                                    <input type="number" class="form-control-enterprise" id="response_time_threshold" required min="10" max="30000" value="{% if service %}{{ service.response_time_threshold }}{% else %}1000{% endif %}">
+                                    <div class="form-text-muted">Alerts if response times exceed this limit (Default: 1000ms).</div>
+                                </div>
                             </div>
                             
-                            <div class="col-12 col-md-4">
-                                <label for="cpu_threshold" class="form-label-enterprise">Max Host CPU Limit (%)</label>
-                                <input type="number" class="form-control-enterprise" id="cpu_threshold" required min="1" max="100" value="{% if service %}{{ service.cpu_threshold }}{% else %}90{% endif %}">
-                                <div class="text-muted mt-1" style="font-size:0.7rem;">Triggers threshold alarm if host CPU percent exceeds this level.</div>
+                            <div class="col-12 col-md-6">
+                                <div class="form-group-enterprise mb-3">
+                                    <label for="cpu_threshold" class="form-label-enterprise">Max Host CPU Limit (%)</label>
+                                    <input type="number" class="form-control-enterprise" id="cpu_threshold" required min="1" max="100" value="{% if service %}{{ service.cpu_threshold }}{% else %}90{% endif %}">
+                                    <div class="form-text-muted">Triggers threshold alarm if CPU exceeds this level.</div>
+                                </div>
                             </div>
                             
-                            <div class="col-12 col-md-4">
-                                <label for="memory_threshold" class="form-label-enterprise">Max Host RAM Limit (%)</label>
-                                <input type="number" class="form-control-enterprise" id="memory_threshold" required min="1" max="100" value="{% if service %}{{ service.memory_threshold }}{% else %}90{% endif %}">
-                                <div class="text-muted mt-1" style="font-size:0.7rem;">Triggers threshold alarm if host memory percent exceeds this level.</div>
+                            <div class="col-12 col-md-6">
+                                <div class="form-group-enterprise mb-3">
+                                    <label for="memory_threshold" class="form-label-enterprise">Max Host RAM Limit (%)</label>
+                                    <input type="number" class="form-control-enterprise" id="memory_threshold" required min="1" max="100" value="{% if service %}{{ service.memory_threshold }}{% else %}90{% endif %}">
+                                    <div class="form-text-muted">Triggers threshold alarm if memory usage exceeds this level.</div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Actions -->
-                    <div class="d-flex gap-2 justify-content-end border-top pt-3 mt-4" style="border-top-color: var(--border-color) !important;">
-                        <a href="/" class="btn-primary-enterprise px-4 py-2 text-decoration-none d-inline-flex align-items-center justify-content-center" style="background-color: var(--bg-surface); border-color: var(--border-color); color: var(--text-secondary);">Cancel</a>
-                        <button type="submit" class="btn-primary-enterprise px-4 py-2 d-flex align-items-center gap-1.5" id="btn-submit">
+                    <!-- ========================================== -->
+                    <!-- STEP 4: Verify & Confirm                    -->
+                    <!-- ========================================== -->
+                    <div class="wizard-section d-none" id="step-section-4">
+                        <h6 class="text-white fw-bold mb-3" style="font-size:0.85rem;">Step 4: Verify Node configuration parameters</h6>
+                        
+                        <div class="p-3 rounded mb-4" style="background-color: var(--bg-input); border: 1px solid var(--border-color); font-size: 0.8rem; line-height: 1.6;">
+                            <div class="row g-2 font-monospace">
+                                <div class="col-4 text-muted">Service Name:</div>
+                                <div class="col-8 text-white fw-semibold" id="review-name">-</div>
+                                
+                                <div class="col-4 text-muted">Environment:</div>
+                                <div class="col-8 text-white" id="review-env">-</div>
+                                
+                                <div class="col-4 text-muted">Endpoint:</div>
+                                <div class="col-8 text-info text-break" id="review-url">-</div>
+                                
+                                <div class="col-4 text-muted">Latency Limit:</div>
+                                <div class="col-8 text-white" id="review-latency">-</div>
+                                
+                                <div class="col-4 text-muted">Max CPU Limit:</div>
+                                <div class="col-8 text-white" id="review-cpu">-</div>
+                                
+                                <div class="col-4 text-muted">Max RAM Limit:</div>
+                                <div class="col-8 text-white" id="review-ram">-</div>
+                            </div>
+                        </div>
+                        <p class="small text-secondary m-0">Please check parameters above. Proceeding registers or updates active health sweep tasks.</p>
+                    </div>
+
+                    <!-- Wizard Control Buttons -->
+                    <div class="d-flex gap-2 justify-content-between border-top pt-3 mt-4" style="border-top-color: var(--border-color) !important;">
+                        <button type="button" class="btn-primary-enterprise px-4 py-2 d-none" style="background-color: var(--bg-surface); border-color: var(--border-color); color: var(--text-secondary);" id="btn-wizard-back">
+                            <i data-lucide="arrow-left" style="width: 15px; height: 15px;"></i>
+                            <span>Back</span>
+                        </button>
+                        <a href="/" class="btn-primary-enterprise px-4 py-2 text-decoration-none d-inline-flex align-items-center justify-content-center" style="background-color: var(--bg-surface); border-color: var(--border-color); color: var(--text-secondary);" id="btn-wizard-cancel">Cancel</a>
+                        
+                        <button type="button" class="btn-primary-enterprise px-4 py-2 ms-auto d-flex align-items-center gap-1.5" id="btn-wizard-next">
+                            <span>Next</span>
+                            <i data-lucide="arrow-right" style="width: 15px; height: 15px;"></i>
+                        </button>
+
+                        <button type="submit" class="btn-primary-enterprise px-4 py-2 ms-auto d-none align-items-center gap-1.5" id="btn-wizard-submit">
                             <span class="spinner-border spinner-border-sm d-none" id="form-spinner" role="status" aria-hidden="true"></span>
                             <i data-lucide="check" id="submit-icon" style="width: 16px; height: 16px;"></i>
                             <span id="btn-submit-text">{% if service %}Save Changes{% else %}Register Node{% endif %}</span>
@@ -107,19 +184,118 @@
         const form = document.getElementById("service-node-form");
         const alertBox = document.getElementById("form-error-alert");
         const alertMsg = document.getElementById("form-error-message");
-        const submitBtn = document.getElementById("btn-submit");
+        
+        // Buttons
+        const btnBack = document.getElementById("btn-wizard-back");
+        const btnNext = document.getElementById("btn-wizard-next");
+        const btnSubmit = document.getElementById("btn-wizard-submit");
+        const btnCancel = document.getElementById("btn-wizard-cancel");
         const spinner = document.getElementById("form-spinner");
         const submitIcon = document.getElementById("submit-icon");
         const btnText = document.getElementById("btn-submit-text");
 
         const editId = "{% if service %}{{ service.id }}{% else %}{% endif %}";
+        
+        let currentStep = 1;
+        const totalSteps = 4;
+
+        // Step sections
+        const sections = [
+            document.getElementById("step-section-1"),
+            document.getElementById("step-section-2"),
+            document.getElementById("step-section-3"),
+            document.getElementById("step-section-4")
+        ];
+
+        const progressLine = document.getElementById("wizard-progress-line");
+
+        function updateWizardUI() {
+            // Update node classes
+            for (let i = 1; i <= totalSteps; i++) {
+                const node = document.getElementById(`node-${i}`);
+                node.classList.remove("active", "completed");
+                
+                if (i === currentStep) {
+                    node.classList.add("active");
+                } else if (i < currentStep) {
+                    node.classList.add("completed");
+                    node.innerHTML = `<i data-lucide="check" style="width:14px; height:14px; stroke-width:3;"></i>`;
+                } else {
+                    node.textContent = i;
+                }
+            }
+
+            // Update line width percentage
+            const percentage = ((currentStep - 1) / (totalSteps - 1)) * 100;
+            progressLine.style.width = `${percentage}%`;
+
+            // Toggle sections
+            sections.forEach((sec, idx) => {
+                if (idx === (currentStep - 1)) {
+                    sec.classList.remove("d-none");
+                } else {
+                    sec.classList.add("d-none");
+                }
+            });
+
+            // Toggle button displays
+            if (currentStep === 1) {
+                btnBack.classList.add("d-none");
+                btnCancel.classList.remove("d-none");
+            } else {
+                btnBack.classList.remove("d-none");
+                btnCancel.classList.add("d-none");
+            }
+
+            if (currentStep === totalSteps) {
+                btnNext.classList.add("d-none");
+                btnSubmit.classList.remove("d-none");
+                
+                // Populate review text parameters
+                document.getElementById("review-name").textContent = document.getElementById("name").value.trim() || "-";
+                document.getElementById("review-env").textContent = document.getElementById("environment").value || "-";
+                document.getElementById("review-url").textContent = document.getElementById("health_url").value.trim() || "-";
+                document.getElementById("review-latency").textContent = (document.getElementById("response_time_threshold").value || "1000") + " ms";
+                document.getElementById("review-cpu").textContent = (document.getElementById("cpu_threshold").value || "90") + " %";
+                document.getElementById("review-ram").textContent = (document.getElementById("memory_threshold").value || "90") + " %";
+            } else {
+                btnNext.classList.remove("d-none");
+                btnSubmit.classList.add("d-none");
+            }
+
+            lucide.createIcons();
+        }
+
+        btnNext.addEventListener("click", () => {
+            // Validate inputs of current step
+            const inputs = sections[currentStep - 1].querySelectorAll("input, select, textarea");
+            let stepValid = true;
+            inputs.forEach(inp => {
+                if (!inp.checkValidity()) {
+                    inp.reportValidity();
+                    stepValid = false;
+                }
+            });
+
+            if (stepValid) {
+                currentStep++;
+                updateWizardUI();
+            }
+        });
+
+        btnBack.addEventListener("click", () => {
+            if (currentStep > 1) {
+                currentStep--;
+                updateWizardUI();
+            }
+        });
 
         form.addEventListener("submit", async (e) => {
             e.preventDefault();
             alertBox.classList.add("d-none");
 
             // Set loading state
-            submitBtn.disabled = true;
+            btnSubmit.disabled = true;
             spinner.classList.remove("d-none");
             submitIcon.classList.add("d-none");
             btnText.textContent = editId ? "Saving..." : "Registering...";
@@ -158,7 +334,6 @@
                     throw new Error(data.detail || "Error saving service endpoint configuration details.");
                 }
 
-                // Show notification and redirect
                 showNotification(
                     editId ? "Service node configuration updated successfully." : "Service node registered successfully.", 
                     "success"
@@ -172,15 +347,19 @@
                 alertBox.classList.remove("d-none");
                 lucide.createIcons();
                 
+                // Go back to the coordinate step or thresholds step to fix
+                currentStep = 1;
+                updateWizardUI();
+
                 // Reset states
-                submitBtn.disabled = false;
+                btnSubmit.disabled = false;
                 spinner.classList.add("d-none");
                 submitIcon.classList.remove("d-none");
                 btnText.textContent = editId ? "Save Changes" : "Register Node";
             }
         });
         
-        lucide.createIcons();
+        updateWizardUI();
     });
 </script>
 {% endblock %}

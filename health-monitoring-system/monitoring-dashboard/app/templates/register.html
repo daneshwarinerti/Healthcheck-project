@@ -3,94 +3,135 @@
 {% block title %}Register - {{ app_name }}{% endblock %}
 
 {% block content %}
-<div class="auth-page-wrapper p-3">
-    <div class="row w-100 justify-content-center">
-        <div class="col-md-6 col-lg-5">
-            <div class="card auth-card border-0">
-                <div class="card-body p-4 p-md-5">
-                    <!-- Header -->
-                    <div class="text-center mb-4">
-                        <div class="auth-icon-wrapper mb-3 mx-auto bg-dark-20 border border-dark-30">
-                            <i class="bi bi-person-plus-fill text-primary"></i>
-                        </div>
-                        <h2 class="auth-title fw-bold text-white fs-4">Create SRE Account</h2>
-                        <p class="auth-subtitle text-light-50 small m-0">Setup credentials and pick your access role</p>
+</div> <!-- Close scrollable content to breakout of base.html structure for full-screen auth -->
+</div> <!-- Close main container -->
+</div> <!-- Close app-shell -->
+
+<div class="auth-split-wrapper">
+    <!-- Left Panel: Brand & Feature Highlights -->
+    <div class="auth-split-left">
+        <div class="mb-5 d-flex align-items-center gap-2">
+            <i data-lucide="activity" class="text-primary animate-pulse" style="width: 32px; height: 32px; stroke-width: 2.5;"></i>
+            <span class="fs-4 fw-bold text-white tracking-wider">SRE PORTAL</span>
+        </div>
+        
+        <h1 class="text-white fw-bold mb-3" style="font-size: 2.2rem; line-height: 1.2;">
+            Enforce cluster visibility policies
+        </h1>
+        <p class="text-secondary mb-4" style="max-width: 480px; font-size: 1rem; line-height: 1.5;">
+            Register an administrator or operator credential to join the infrastructure monitoring team.
+        </p>
+        
+        <ul class="auth-feature-list">
+            <li class="auth-feature-item">
+                <i data-lucide="shield-check"></i>
+                <div>
+                    <strong class="text-white d-block mb-0.5">Role-Based Access Control</strong>
+                    Enforce strict authorization tiers for Viewers, Operators, and Administrators.
+                </div>
+            </li>
+            <li class="auth-feature-item">
+                <i data-lucide="gauge"></i>
+                <div>
+                    <strong class="text-white d-block mb-0.5">Real-time Telemetry Graphs</strong>
+                    Inspect system metrics and latency trend line plots with zero configuration.
+                </div>
+            </li>
+            <li class="auth-feature-item">
+                <i data-lucide="terminal"></i>
+                <div>
+                    <strong class="text-white d-block mb-0.5">Logs Ledger Explorer</strong>
+                    Aggregate health checks, system processes, and admin audits in one clean console.
+                </div>
+            </li>
+        </ul>
+    </div>
+    
+    <!-- Right Panel: Registration Form -->
+    <div class="auth-split-right">
+        <div class="auth-card-enterprise" style="max-width: 480px;">
+            <div class="mb-4">
+                <h2 class="auth-title">Create SRE Account</h2>
+                <p class="auth-subtitle">Provide details to register your cluster operator credentials</p>
+            </div>
+
+            <!-- Error Alert -->
+            <div id="error-alert" class="alert alert-danger d-none shadow-sm small py-2.5 px-3 mb-4" role="alert" style="background-color: rgba(239, 68, 68, 0.12); border-color: rgba(239, 68, 68, 0.2); color: #f87171;">
+                <i data-lucide="alert-triangle" class="me-2" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle;"></i>
+                <span id="error-message" style="vertical-align: middle;"></span>
+            </div>
+
+            <!-- Registration Form -->
+            <form id="register-form">
+                <div class="row g-3 mb-3">
+                    <div class="col-6">
+                        <label for="first_name" class="form-label-enterprise">First Name</label>
+                        <input type="text" class="form-control-enterprise" id="first_name" required placeholder="John">
                     </div>
-
-                    <!-- Error Alert -->
-                    <div id="error-alert" class="alert alert-danger d-none shadow-sm small py-2.5 px-3 mb-4" role="alert">
-                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                        <span id="error-message">Registration failed.</span>
-                    </div>
-
-                    <!-- Registration Form -->
-                    <form id="register-form">
-                        <div class="row g-3 mb-3">
-                            <div class="col-6">
-                                <label for="first_name" class="form-label text-light-50 small fw-medium text-uppercase tracking-wider">First Name</label>
-                                <input type="text" class="form-control" id="first_name" required placeholder="John">
-                            </div>
-                            <div class="col-6">
-                                <label for="last_name" class="form-label text-light-50 small fw-medium text-uppercase tracking-wider">Last Name</label>
-                                <input type="text" class="form-control" id="last_name" required placeholder="Doe">
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="email" class="form-label text-light-50 small fw-medium text-uppercase tracking-wider">Email Address</label>
-                            <input type="email" class="form-control" id="email" placeholder="john.doe@example.com" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="role" class="form-label text-light-50 small fw-medium text-uppercase tracking-wider">Access Role</label>
-                            <select class="form-select pointer" id="role" required>
-                                <option value="Viewer">Viewer (Read-Only Dashboard)</option>
-                                <option value="Operator">Operator (Ack alerts, trigger checks)</option>
-                                <option value="Admin">Admin (Full privileges)</option>
-                            </select>
-                        </div>
-
-                        <div class="row g-3 mb-4">
-                            <div class="col-6">
-                                <label for="password" class="form-label text-light-50 small fw-medium text-uppercase tracking-wider">Password</label>
-                                <input type="password" class="form-control" id="password" required placeholder="••••••••">
-                            </div>
-                            <div class="col-6">
-                                <label for="confirm_password" class="form-label text-light-50 small fw-medium text-uppercase tracking-wider">Confirm</label>
-                                <input type="password" class="form-control" id="confirm_password" required placeholder="••••••••">
-                            </div>
-                        </div>
-
-                        <!-- Password complexity helper card -->
-                        <div class="bg-dark-20 p-3 rounded border border-dark-30 mb-4 text-light-50" style="font-size: 0.75rem;">
-                            <div class="fw-bold mb-1 text-white text-uppercase tracking-wider" style="font-size: 0.7rem;">Password Requirements:</div>
-                            <ul class="m-0 ps-3">
-                                <li id="req-len" class="text-danger">Minimum 8 characters long</li>
-                                <li id="req-case" class="text-danger">At least one uppercase and one lowercase letter</li>
-                                <li id="req-num" class="text-danger">At least one numerical digit</li>
-                                <li id="req-spec" class="text-danger">At least one special character (e.g. !@#$)</li>
-                            </ul>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary w-100 py-2.5 fw-semibold transition-all d-flex align-items-center justify-content-center gap-2" id="register-submit-btn">
-                            <span class="spinner-border spinner-border-sm d-none" id="register-spinner" role="status" aria-hidden="true"></span>
-                            <span id="register-btn-text">Register Account</span>
-                            <i class="bi bi-person-plus-fill" id="register-btn-icon"></i>
-                        </button>
-                    </form>
-
-                    <!-- Sign up redirect -->
-                    <div class="text-center mt-4 border-top border-dark-30 pt-3">
-                        <span class="text-light-50 small">Already have an account? </span>
-                        <a href="/login" class="text-decoration-none text-primary small fw-semibold hover-white">
-                            Sign In
-                        </a>
+                    <div class="col-6">
+                        <label for="last_name" class="form-label-enterprise">Last Name</label>
+                        <input type="text" class="form-control-enterprise" id="last_name" required placeholder="Doe">
                     </div>
                 </div>
+
+                <div class="form-group-enterprise mb-3">
+                    <label for="email" class="form-label-enterprise">Email Address</label>
+                    <input type="email" class="form-control-enterprise" id="email" placeholder="john.doe@example.com" required>
+                </div>
+
+                <div class="form-group-enterprise mb-3">
+                    <label for="role" class="form-label-enterprise">Access Role</label>
+                    <select class="form-select-enterprise pointer" id="role" required>
+                        <option value="Viewer">Viewer (Read-Only Dashboard)</option>
+                        <option value="Operator">Operator (Ack alerts, trigger checks)</option>
+                        <option value="Admin">Admin (Full privileges)</option>
+                    </select>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-6">
+                        <label for="password" class="form-label-enterprise">Password</label>
+                        <input type="password" class="form-control-enterprise" id="password" required placeholder="••••••••">
+                    </div>
+                    <div class="col-6">
+                        <label for="confirm_password" class="form-label-enterprise">Confirm</label>
+                        <input type="password" class="form-control-enterprise" id="confirm_password" required placeholder="••••••••">
+                    </div>
+                </div>
+
+                <!-- Password complexity helper card -->
+                <div class="p-3 rounded mb-4" style="background-color: var(--bg-input); border: 1px solid var(--border-color); font-size: 0.72rem; color: var(--text-secondary);">
+                    <div class="fw-bold mb-2 text-white text-uppercase tracking-wider" style="font-size: 0.68rem; letter-spacing: 0.5px;">Password Requirements:</div>
+                    <ul class="m-0 ps-3 d-flex flex-column gap-1">
+                        <li id="req-len" class="text-danger">Minimum 8 characters long</li>
+                        <li id="req-case" class="text-danger">At least one uppercase and one lowercase letter</li>
+                        <li id="req-num" class="text-danger">At least one numerical digit</li>
+                        <li id="req-spec" class="text-danger">At least one special character (e.g. !@#$)</li>
+                    </ul>
+                </div>
+
+                <button type="submit" class="btn-primary-enterprise w-100 py-2.5 fw-semibold transition-all d-flex align-items-center justify-content-center gap-2" id="register-submit-btn">
+                    <span class="spinner-border spinner-border-sm d-none" id="register-spinner" role="status" aria-hidden="true"></span>
+                    <span id="register-btn-text">Register Account</span>
+                    <i data-lucide="user-plus" id="register-btn-icon" style="width: 16px; height: 16px;"></i>
+                </button>
+            </form>
+
+            <!-- Sign in redirect -->
+            <div class="text-center mt-4 border-top pt-3" style="border-top-color: var(--border-color) !important;">
+                <span class="text-secondary small">Already have an account? </span>
+                <a href="/login" class="text-decoration-none text-primary small fw-semibold hover-white">
+                    Sign In
+                </a>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Open layout divs back up to ensure HTML remains balanced and doesn't break base template footer -->
+<div class="d-none">
+    <div class="main-container">
+        <main class="scrollable-content">
 {% endblock %}
 
 {% block scripts %}
@@ -106,7 +147,6 @@
         const btnText = document.getElementById("register-btn-text");
         const btnIcon = document.getElementById("register-btn-icon");
 
-        // Real-time password validator indicators
         const reqLen = document.getElementById("req-len");
         const reqCase = document.getElementById("req-case");
         const reqNum = document.getElementById("req-num");
@@ -160,6 +200,7 @@
             if (password !== confirm_password) {
                 errorMessage.textContent = "Confirmation password entry does not match original password.";
                 errorAlert.classList.remove("d-none");
+                lucide.createIcons();
                 return;
             }
 
@@ -204,6 +245,7 @@
             } catch (err) {
                 errorMessage.textContent = err.message;
                 errorAlert.classList.remove("d-none");
+                lucide.createIcons();
                 
                 // Reset loading state
                 submitBtn.disabled = false;
@@ -212,6 +254,8 @@
                 btnIcon.classList.remove("d-none");
             }
         });
+        
+        lucide.createIcons();
     });
 </script>
 {% endblock %}

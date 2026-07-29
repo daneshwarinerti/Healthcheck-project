@@ -1,72 +1,60 @@
-/* Global Design System Variables */
+/* SaaS SRE Design System Variables - Dark Mode Only */
 :root {
-    /* Color Palette */
+    /* Color Tokens */
     --primary: #3B82F6;
     --primary-hover: #2563EB;
-    --primary-glow: rgba(59, 130, 246, 0.15);
+    --primary-glow: rgba(59, 130, 246, 0.1);
     
     --success: #22C55E;
-    --success-glow: rgba(34, 197, 94, 0.15);
+    --success-glow: rgba(34, 197, 94, 0.1);
     
     --warning: #F59E0B;
-    --warning-glow: rgba(245, 158, 11, 0.15);
+    --warning-glow: rgba(245, 158, 11, 0.1);
     
     --danger: #EF4444;
-    --danger-glow: rgba(239, 68, 68, 0.15);
-
+    --danger-glow: rgba(239, 68, 68, 0.1);
+    
     --info: #06B6D4;
+    --info-glow: rgba(6, 182, 212, 0.1);
+    
     --offline: #64748B;
+    --offline-glow: rgba(100, 116, 139, 0.1);
     
-    /* Dark Theme Surface Colors */
-    --bg-app: #0F172A;
+    /* Layout Backgrounds */
+    --bg-app: #0B1220;
+    --bg-sidebar: #111827;
+    --bg-card: #1F2937;
+    --bg-navbar: #0B1220;
+    --bg-input: #0F172A;
     --bg-surface: #1E293B;
-    --bg-card: #111827;
-    --bg-navbar: #0B0F19;
-    --bg-input: #090D16;
     
-    /* Border Colors */
-    --border-color: rgba(255, 255, 255, 0.08);
-    --border-hover: rgba(255, 255, 255, 0.15);
+    /* Borders */
+    --border-color: rgba(255, 255, 255, 0.06);
+    --border-hover: rgba(255, 255, 255, 0.12);
     
-    /* Text Colors */
+    /* Typography */
     --text-primary: #F8FAFC;
     --text-secondary: #94A3B8;
     --text-muted: #64748B;
     
-    /* Spacing Scale */
+    /* Border Radii */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-pill: 9999px;
+    
+    /* Spacing Grid (8px baseline) */
     --space-xs: 8px;
     --space-sm: 12px;
     --space-md: 16px;
     --space-lg: 24px;
     --space-xl: 32px;
     
-    /* Border Radii */
-    --radius-sm: 4px;
-    --radius-md: 10px;
-    --radius-lg: 16px;
+    /* Shadows */
+    --shadow-soft: 0 4px 20px -2px rgba(0, 0, 0, 0.3), 0 2px 8px -1px rgba(0, 0, 0, 0.2);
+    --shadow-glow: 0 0 15px rgba(59, 130, 246, 0.15);
     
-    /* Transitions */
-    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-    
-    /* Font Weight */
-    --font-regular: 400;
-    --font-medium: 500;
-    --font-semibold: 600;
-    --font-bold: 700;
-}
-
-/* Light Theme Support */
-[data-bs-theme="light"] {
-    --bg-app: #F8FAFC;
-    --bg-surface: #FFFFFF;
-    --bg-card: #FFFFFF;
-    --bg-navbar: #F1F5F9;
-    --bg-input: #F8FAFC;
-    
-    --border-color: rgba(0, 0, 0, 0.08);
-    --border-hover: rgba(0, 0, 0, 0.15);
-    
-    --text-primary: #0F172A;
-    --text-secondary: #475569;
-    --text-muted: #94A3B8;
+    /* Animations */
+    --transition-speed: 150ms;
+    --transition-curve: cubic-bezier(0.4, 0, 0.2, 1);
 }

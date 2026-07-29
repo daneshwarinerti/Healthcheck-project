@@ -16,7 +16,7 @@
 <div class="row g-3 mb-4">
     <!-- Back control -->
     <div class="col-12">
-        <a href="/" class="btn-primary-enterprise px-3 py-1.5 text-decoration-none d-inline-flex align-items-center gap-1.5 transition-all" style="background-color: var(--bg-surface); border-color: var(--border-color); color: var(--text-secondary);">
+        <a href="/" class="btn-sre btn-sre-secondary">
             <i data-lucide="arrow-left" style="width: 15px; height: 15px;"></i>
             <span>Back to Dashboard</span>
         </a>
@@ -34,21 +34,21 @@
         
         <div class="d-flex gap-2">
             <!-- Manual Check Restart -->
-            <button class="btn-primary-enterprise px-3 py-1.5 d-flex align-items-center gap-1.5 transition-all" id="btn-manual-check">
+            <button class="btn-sre btn-sre-primary" id="btn-manual-check">
                 <span class="spinner-border spinner-border-sm d-none" id="check-spinner"></span>
                 <i data-lucide="refresh-cw" id="check-icon" style="width: 14px; height: 14px;"></i>
                 <span>Restart Check</span>
             </button>
             
             <!-- Acknowledge alerts -->
-            <button class="btn-primary-enterprise px-3 py-1.5 d-flex align-items-center gap-1.5 transition-all text-warning" style="background-color: var(--bg-surface); border-color: var(--border-color);" id="btn-ack-alerts">
+            <button class="btn-sre btn-sre-secondary text-warning" id="btn-ack-alerts">
                 <i data-lucide="shield-alert" style="width: 14px; height: 14px;"></i>
                 <span>Acknowledge Alerts</span>
             </button>
 
             <!-- Edit (Admin only) -->
             {% if user.role == "Admin" %}
-            <a href="/services/{{ service.id }}/edit" class="btn-primary-enterprise px-3 py-1.5 d-flex align-items-center gap-1.5 transition-all text-secondary" style="background-color: var(--bg-surface); border-color: var(--border-color); text-decoration: none;">
+            <a href="/services/{{ service.id }}/edit" class="btn-sre btn-sre-secondary">
                 <i data-lucide="settings" style="width: 14px; height: 14px;"></i>
                 <span>Edit Config</span>
             </a>
@@ -271,7 +271,7 @@
                 
                 <!-- Submit Queries -->
                 <div class="col-12 col-md-3 text-end">
-                    <button type="submit" class="btn-primary-enterprise px-4 py-1.5 w-100 d-flex align-items-center justify-content-center gap-1.5">
+                    <button type="submit" class="btn-sre btn-sre-primary w-100">
                         <i data-lucide="search" style="width: 14px; height: 14px;"></i>
                         <span>Query Ledger</span>
                     </button>
@@ -312,12 +312,12 @@
             
             <!-- Pagination footer controls -->
             <div class="py-3 px-4 d-flex align-items-center justify-content-between border-top bg-navbar" id="ledger-pagination-container" style="border-top-color: var(--border-color) !important;">
-                <button class="btn-primary-enterprise py-1.5 px-3 d-flex align-items-center gap-1.5" style="background-color: var(--bg-surface); border-color: var(--border-color); color: var(--text-secondary);" id="btn-prev-page" disabled>
+                <button class="btn-sre btn-sre-secondary" id="btn-prev-page" disabled>
                     <i data-lucide="chevron-left" style="width: 14px; height: 14px;"></i>
                     <span>Previous</span>
                 </button>
                 <span class="text-secondary small fw-medium" id="page-indicator">Page 1</span>
-                <button class="btn-primary-enterprise py-1.5 px-3 d-flex align-items-center gap-1.5" style="background-color: var(--bg-surface); border-color: var(--border-color); color: var(--text-secondary);" id="btn-next-page">
+                <button class="btn-sre btn-sre-secondary" id="btn-next-page">
                     <span>Next</span>
                     <i data-lucide="chevron-right" style="width: 14px; height: 14px;"></i>
                 </button>

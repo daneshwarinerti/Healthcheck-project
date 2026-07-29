@@ -1,40 +1,32 @@
-/* Dashboard-Specific Stylesheet */
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: var(--space-md);
-    margin-bottom: var(--space-lg);
-}
-
-.chart-card-body {
-    position: relative;
-    height: 220px;
-    width: 100%;
-}
-
-.section-title-sre {
-    font-size: 0.78rem;
+/* SaaS Dashboard Layout Stylesheet */
+.dashboard-section-header {
+    font-size: 0.7rem;
     font-weight: var(--font-bold);
     color: var(--text-secondary);
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 1.2px;
+    margin-top: var(--space-lg);
     margin-bottom: var(--space-md);
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
-.section-title-sre svg {
+.dashboard-section-header svg {
     width: 14px;
     height: 14px;
     color: var(--primary);
 }
 
-/* Sparkline cells inside monitoring lists */
-.sparkline-container {
-    width: 90px;
-    height: 22px;
+.chart-canvas-wrapper {
     position: relative;
+    height: 200px;
+    width: 100%;
+}
+
+.sparkline-box {
+    width: 90px;
+    height: 20px;
     display: inline-flex;
     align-items: center;
 }
@@ -42,4 +34,57 @@
 .sparkline-canvas {
     width: 100%;
     height: 100%;
+}
+
+/* Slide-over details drawer panels */
+.detail-drawer-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 1040;
+    display: none;
+    opacity: 0;
+    transition: opacity var(--transition-speed) var(--transition-curve);
+}
+
+.detail-drawer-backdrop.show {
+    display: block;
+    opacity: 1;
+}
+
+.detail-drawer {
+    position: fixed;
+    top: 0;
+    right: -480px;
+    width: 480px;
+    height: 100vh;
+    background-color: var(--bg-card);
+    border-left: 1px solid var(--border-color);
+    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.4);
+    z-index: 1050;
+    display: flex;
+    flex-direction: column;
+    transition: right var(--transition-speed) var(--transition-curve);
+}
+
+.detail-drawer.open {
+    right: 0;
+}
+
+.detail-drawer-header {
+    padding: var(--space-md) var(--space-lg);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--bg-sidebar);
+}
+
+.detail-drawer-body {
+    flex: 1;
+    padding: var(--space-lg);
+    overflow-y: auto;
 }

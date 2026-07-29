@@ -11,7 +11,7 @@
     <div class="card-enterprise kpi-card">
         <div class="kpi-header">
             <span>Active Targets</span>
-            <i data-lucide="network" class="text-primary" style="width: 16px; height: 16px;"></i>
+            <i data-lucide="network" class="text-primary"></i>
         </div>
         <div class="kpi-value" id="card-total-services">0</div>
         <div class="kpi-subtext">Configured monitoring nodes</div>
@@ -21,7 +21,7 @@
     <div class="card-enterprise kpi-card">
         <div class="kpi-header">
             <span>Healthy</span>
-            <i data-lucide="check-circle-2" class="text-success" style="width: 16px; height: 16px;"></i>
+            <i data-lucide="check-circle-2" class="text-success"></i>
         </div>
         <div class="kpi-value text-success" id="card-healthy-services">0</div>
         <div class="kpi-subtext">Online & responding</div>
@@ -31,7 +31,7 @@
     <div class="card-enterprise kpi-card">
         <div class="kpi-header">
             <span>Warning</span>
-            <i data-lucide="help-circle" class="text-warning" style="width: 16px; height: 16px;"></i>
+            <i data-lucide="help-circle" class="text-warning"></i>
         </div>
         <div class="kpi-value text-warning" id="card-warning-services">0</div>
         <div class="kpi-subtext">Degraded performance</div>
@@ -41,7 +41,7 @@
     <div class="card-enterprise kpi-card">
         <div class="kpi-header">
             <span>Critical & Offline</span>
-            <i data-lucide="alert-circle" class="text-danger" style="width: 16px; height: 16px;"></i>
+            <i data-lucide="alert-circle" class="text-danger"></i>
         </div>
         <div class="kpi-value text-danger" id="card-critical-offline-services">0</div>
         <div class="kpi-subtext">Connection or status issues</div>
@@ -51,7 +51,7 @@
     <div class="card-enterprise kpi-card">
         <div class="kpi-header">
             <span>Avg Latency</span>
-            <i data-lucide="activity" class="text-info" style="width: 16px; height: 16px;"></i>
+            <i data-lucide="activity" class="text-info"></i>
         </div>
         <div class="kpi-value text-info">
             <span id="card-avg-latency">0</span><span style="font-size: 0.95rem; font-weight: normal; margin-left: 2px;">ms</span>
@@ -68,7 +68,7 @@
             <div>
                 <div class="d-flex justify-content-between align-items-center mb-1.5">
                     <span class="form-label-enterprise m-0" style="font-size:0.68rem;">Host CPU Load</span>
-                    <span class="badge bg-primary-glow text-primary small" id="card-cpu-cores" style="font-size:0.7rem;">0 Cores</span>
+                    <span class="badge text-primary small" style="background-color: var(--primary-glow); font-size:0.7rem;" id="card-cpu-cores">0 Cores</span>
                 </div>
                 <div class="kpi-value m-0 fs-3" id="card-cpu-percent">0%</div>
             </div>
@@ -132,7 +132,7 @@
     <!-- Left Column: Graph Visualizations Grid (6-Charts Layout) -->
     <div class="col-12 col-xl-9">
         <div class="card-enterprise p-4">
-            <h5 class="section-title-sre">
+            <h5 class="dashboard-section-header">
                 <i data-lucide="trending-up"></i>
                 <span>Telemetry Visualizations</span>
             </h5>
@@ -141,36 +141,36 @@
                 <!-- Latency Graph -->
                 <div class="col-12 col-md-6 col-lg-4">
                     <div class="p-3 border rounded" style="background-color: rgba(0,0,0,0.1); border-color: var(--border-color) !important;">
-                        <span class="form-label-enterprise mb-2 d-block" style="font-size:0.7rem;">Service Latency (ms)</span>
-                        <div class="chart-card-body"><canvas id="chart-latency"></canvas></div>
+                        <span class="form-label-enterprise mb-2 d-block" style="font-size:0.7rem;">Response Time (ms)</span>
+                        <div class="chart-canvas-wrapper"><canvas id="chart-latency"></canvas></div>
                     </div>
                 </div>
                 <!-- CPU Graph -->
                 <div class="col-12 col-md-6 col-lg-4">
                     <div class="p-3 border rounded" style="background-color: rgba(0,0,0,0.1); border-color: var(--border-color) !important;">
                         <span class="form-label-enterprise mb-2 d-block" style="font-size:0.7rem;">CPU Utilization %</span>
-                        <div class="chart-card-body"><canvas id="chart-cpu"></canvas></div>
+                        <div class="chart-canvas-wrapper"><canvas id="chart-cpu"></canvas></div>
                     </div>
                 </div>
                 <!-- RAM Graph -->
                 <div class="col-12 col-md-6 col-lg-4">
                     <div class="p-3 border rounded" style="background-color: rgba(0,0,0,0.1); border-color: var(--border-color) !important;">
                         <span class="form-label-enterprise mb-2 d-block" style="font-size:0.7rem;">Memory Utilization %</span>
-                        <div class="chart-card-body"><canvas id="chart-ram"></canvas></div>
+                        <div class="chart-canvas-wrapper"><canvas id="chart-ram"></canvas></div>
                     </div>
                 </div>
                 <!-- Availability -->
                 <div class="col-12 col-md-6 col-lg-4">
                     <div class="p-3 border rounded" style="background-color: rgba(0,0,0,0.1); border-color: var(--border-color) !important;">
                         <span class="form-label-enterprise mb-2 d-block" style="font-size:0.7rem;">Uptime Availability %</span>
-                        <div class="chart-card-body"><canvas id="chart-availability"></canvas></div>
+                        <div class="chart-canvas-wrapper"><canvas id="chart-availability"></canvas></div>
                     </div>
                 </div>
                 <!-- Status Distribution -->
                 <div class="col-12 col-md-6 col-lg-4">
                     <div class="p-3 border rounded" style="background-color: rgba(0,0,0,0.1); border-color: var(--border-color) !important;">
                         <span class="form-label-enterprise mb-2 d-block" style="font-size:0.7rem;">Status Allocations</span>
-                        <div class="chart-card-body d-flex align-items-center justify-content-center">
+                        <div class="chart-canvas-wrapper d-flex align-items-center justify-content-center">
                             <canvas id="chart-distribution" style="max-height:170px; max-width:170px;"></canvas>
                         </div>
                     </div>
@@ -179,7 +179,7 @@
                 <div class="col-12 col-md-6 col-lg-4">
                     <div class="p-3 border rounded" style="background-color: rgba(0,0,0,0.1); border-color: var(--border-color) !important;">
                         <span class="form-label-enterprise mb-2 d-block" style="font-size:0.7rem;">Requests Rate (RPM)</span>
-                        <div class="chart-card-body"><canvas id="chart-rpm"></canvas></div>
+                        <div class="chart-canvas-wrapper"><canvas id="chart-rpm"></canvas></div>
                     </div>
                 </div>
             </div>
@@ -190,7 +190,7 @@
     <div class="col-12 col-xl-3">
         <div class="card-enterprise h-100 d-flex flex-column" style="max-height: 575px;">
             <div class="pb-3 border-bottom border-dark-30 d-flex align-items-center justify-content-between" style="border-bottom-color: var(--border-color) !important;">
-                <h5 class="section-title-sre m-0">
+                <h5 class="dashboard-section-header m-0">
                     <i data-lucide="bell" class="text-warning"></i>
                     <span>Alert Logs Feed</span>
                 </h5>
@@ -254,7 +254,7 @@
 
         <!-- Controls -->
         <div class="col-6 col-md-2 text-end">
-            <button class="btn-primary-enterprise w-100 py-1.5 d-flex align-items-center justify-content-center gap-1.5" id="btn-restart-scheduler" title="Force trigger checking sweep">
+            <button class="btn-sre btn-sre-primary w-100 py-2 d-flex align-items-center justify-content-center gap-1.5" id="btn-restart-scheduler" title="Force trigger checking sweep">
                 <i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i>
                 <span>Force Poll</span>
             </button>
@@ -300,7 +300,7 @@
             <i data-lucide="server" class="text-primary" style="width: 18px; height: 18px;"></i>
             <span id="drawer-service-name">Service Inspector</span>
         </h5>
-        <button class="btn btn-icon" id="drawer-close-btn" style="border: none; background: transparent;">
+        <button class="btn btn-icon" id="drawer-close-btn" style="border: none; background: transparent; color: var(--text-secondary);">
             <i data-lucide="x"></i>
         </button>
     </div>

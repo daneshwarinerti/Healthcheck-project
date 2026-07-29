@@ -1,6 +1,6 @@
-/* Responsive layout behavior */
+/* SaaS Responsive layout stylesheet overrides */
 @media (max-width: 992px) {
-    .sidebar {
+    .sidebar-panel {
         transform: translateX(-100%);
         position: fixed;
         top: 0;
@@ -8,16 +8,16 @@
         height: 100vh;
         z-index: 1100;
     }
-    .sidebar.open {
+    .sidebar-panel.open {
         transform: translateX(0);
     }
-    .topbar-search {
+    .topbar-search-box {
         display: none;
     }
 }
 
 @media (max-width: 768px) {
-    .main-content {
+    .scrollable-content {
         padding: var(--space-md);
     }
     
@@ -25,8 +25,12 @@
         grid-template-columns: repeat(2, 1fr);
     }
     
-    .dashboard-grid {
-        grid-template-columns: 1fr;
+    .auth-split-left {
+        display: none !important;
+    }
+    .auth-split-right {
+        flex: 1;
+        padding: var(--space-md);
     }
     
     .detail-drawer {
@@ -40,12 +44,12 @@
         grid-template-columns: 1fr;
     }
     
-    .topbar-right {
+    .topbar-nav-right {
         gap: var(--space-xs);
     }
 }
 
-/* Helper to show scrollbars on table overflow */
+/* Scroll wrapper for data lists */
 .table-responsive {
     width: 100%;
     overflow-x: auto;

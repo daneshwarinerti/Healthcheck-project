@@ -1,0 +1,89 @@
+/* SaaS Topbar Navigation Styles */
+.topbar-nav {
+    height: 60px;
+    background-color: var(--bg-navbar) !important;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--space-lg);
+    position: sticky;
+    top: 0;
+    z-index: 990;
+}
+
+.topbar-nav-left {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.topbar-nav-right {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.topbar-search-box {
+    position: relative;
+    width: 260px;
+}
+
+.topbar-search-box input {
+    width: 100%;
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 6px 12px 6px 36px;
+    color: var(--text-primary);
+    font-size: 0.8rem;
+    outline: none;
+    transition: border-color var(--transition-speed);
+}
+
+.topbar-search-box input:focus {
+    border-color: var(--primary);
+}
+
+.topbar-search-box svg {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    width: 14px;
+    height: 14px;
+}
+
+/* Environment indicator select */
+.topbar-env-dropdown {
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 5px var(--space-sm);
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    font-weight: var(--font-medium);
+    outline: none;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+}
+
+.topbar-env-dropdown:focus {
+    border-color: var(--primary);
+}
+
+.topbar-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+    font-weight: var(--font-medium);
+}
+
+.topbar-meta-item svg {
+    width: 14px;
+    height: 14px;
+    stroke-width: 2;
+}
