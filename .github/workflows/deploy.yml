@@ -18,7 +18,7 @@ jobs:
   # STAGE 1: TESTING & LINTING
   # =========================================================================
   test:
-    name: 🧪 Run Application Unit Tests
+    name:  Run Application Unit Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -46,7 +46,7 @@ jobs:
   # STAGE 2: BUILD DOCKER IMAGES & DEPLOY TO AMAZON EKS
   # =========================================================================
   build-and-deploy:
-    name: 🚀 Build Images & Deploy to EKS
+    name:  Build Images & Deploy to EKS
     needs: test
     runs-on: ubuntu-latest
     permissions:
