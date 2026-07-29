@@ -16,14 +16,27 @@ from app.core.logging import setup_logging, app_logger, error_logger
 from app.services.monitoring_service import MonitoringService
 from app.routers import auth, dashboard, services, health, logs
 
-# Configure lifespan events to handle APScheduler threads startup and shutdown
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup Sequence
     setup_logging()
     app_logger.info("Main: Starting up SRE Infrastructure Health Monitoring Portal...")
     
-    # Start APScheduler daemon thread
+    # 1. Run database seeding (skip during automated test suites to preserve fixture state)
+    if not os.environ.get("TESTING"):
+        try:
+            from app.seed import seed_db
+            seed_db()
+        except Exception as e:
+            app_logger.warning(f"Main: Startup seeding note: {e}")
+
+        # 2. Trigger initial health checks for all target nodes
+        try:
+            MonitoringService.run_all_checks()
+        except Exception as e:
+            app_logger.warning(f"Main: Initial health check sweep note: {e}")
+
+    # 3. Start APScheduler daemon thread
     MonitoringService.start_scheduler()
     
     yield

@@ -2,6 +2,7 @@
 Health service layer using psutil to compile real-time hardware telemetry.
 """
 
+import os
 import time
 import socket
 import platform
@@ -13,6 +14,12 @@ from app.database.models import HealthLog, AuditLog, Service
 from app.repositories.log import health_log_repo, audit_log_repo
 from app.repositories.service import service_repo
 
+# Warm up psutil CPU calculation on module load
+try:
+    psutil.cpu_percent(interval=None)
+except Exception:
+    pass
+
 class HealthService:
     """
     HealthService encapsulating hardware stats collection and database logs.
@@ -22,10 +29,14 @@ class HealthService:
     def get_system_metrics() -> Dict[str, Any]:
         """
         Reads real-time hardware performance metrics of the host machine using psutil.
+        Cross-platform compatible with Windows, Linux, and macOS.
         """
         # 1. CPU Telemetry
-        # interval=None ensures it is non-blocking and returns instantaneous value
         cpu_percent = psutil.cpu_percent(interval=None)
+        if cpu_percent == 0.0:
+            time.sleep(0.02)
+            cpu_percent = psutil.cpu_percent(interval=None)
+            
         cpu_cores = psutil.cpu_count(logical=True) or 1
         
         # 2. Memory Telemetry
@@ -34,9 +45,10 @@ class HealthService:
         mem_used = round(mem.used / (1024 ** 3), 2)  # Convert to GB
         mem_total = round(mem.total / (1024 ** 3), 2)
         
-        # 3. Disk Telemetry
+        # 3. Disk Telemetry (Cross-platform root pathing)
         try:
-            disk = psutil.disk_usage('/')
+            root_path = os.path.abspath(os.sep)
+            disk = psutil.disk_usage(root_path)
             disk_percent = disk.percent
             disk_used = round(disk.used / (1024 ** 3), 2)
             disk_total = round(disk.total / (1024 ** 3), 2)
@@ -55,20 +67,23 @@ class HealthService:
             net_recv = 0.0
             
         # 5. Uptime Calculation
-        boot_seconds = time.time() - psutil.boot_time()
-        days, remainder = divmod(int(boot_seconds), 86400)
-        hours, remainder = divmod(remainder, 3600)
-        minutes, seconds = divmod(remainder, 60)
-        
-        if days > 0:
+        try:
+            boot_seconds = time.time() - psutil.boot_time()
+            days, remainder = divmod(int(boot_seconds), 86400)
+            hours, remainder = divmod(remainder, 3600)
+            minutes, seconds = divmod(remainder, 60)
             uptime_str = f"{days}d {hours}h {minutes}m"
-        elif hours > 0:
-            uptime_str = f"{hours}h {minutes}m"
-        else:
-            uptime_str = f"{minutes}m {seconds}s"
-            
+        except Exception:
+            uptime_str = "Unknown"
+
+        # 6. Host System Platform Telemetry
+        try:
+            hostname = socket.gethostname()
+        except Exception:
+            hostname = "localhost"
+
         return {
-            "cpu_percent": cpu_percent,
+            "cpu_percent": round(cpu_percent, 1),
             "cpu_cores": cpu_cores,
             "memory_percent": mem_percent,
             "memory_used_gb": mem_used,
@@ -79,43 +94,27 @@ class HealthService:
             "network_sent_mb": net_sent,
             "network_recv_mb": net_recv,
             "system_uptime": uptime_str,
-            "hostname": socket.gethostname(),
+            "hostname": hostname,
             "platform": f"{platform.system()} {platform.release()}",
             "python_version": platform.python_version()
         }
 
     @staticmethod
-    def query_health_logs(
-        db: Session, 
-        service_id: Optional[int] = None, 
-        status: Optional[str] = None, 
-        skip: int = 0,
-        limit: int = 100
-    ) -> List[HealthLog]:
+    def execute_tcp_ping(host: str, port: int, timeout: float = 3.0) -> tuple:
         """
-        Queries health check logs with optional service, status, pagination filters.
+        Executes a socket connection probe to measure round-trip latency.
         """
-        query = db.query(HealthLog)
-        
-        if service_id is not None:
-            query = query.filter(HealthLog.service_id == service_id)
-        if status is not None and status != "All":
-            query = query.filter(HealthLog.status == status)
-            
-        return query.order_by(HealthLog.timestamp.desc()).offset(skip).limit(limit).all()
-
-    @staticmethod
-    def query_audit_logs(
-        db: Session, 
-        action: Optional[str] = None, 
-        skip: int = 0,
-        limit: int = 100
-    ) -> List[AuditLog]:
-        """
-        Queries audit trail action entries supporting pagination.
-        """
-        query = db.query(AuditLog)
-        if action is not None and action != "All":
-            query = query.filter(AuditLog.action == action)
-            
-        return query.order_by(AuditLog.timestamp.desc()).offset(skip).limit(limit).all()
+        start = time.time()
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(timeout)
+        try:
+            s.connect((host, port))
+            s.close()
+            latency = round((time.time() - start) * 1000, 2)
+            return True, latency, 200, "Connection established successfully."
+        except socket.timeout:
+            return False, 0.0, 504, f"Socket connection timeout after {timeout}s."
+        except ConnectionRefusedError:
+            return False, 0.0, 601, f"Connection refused at {host}:{port}."
+        except Exception as ex:
+            return False, 0.0, 500, f"Socket error: {str(ex)}"
