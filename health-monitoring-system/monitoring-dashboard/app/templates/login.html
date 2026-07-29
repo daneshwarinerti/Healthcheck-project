@@ -3,11 +3,11 @@
 {% block title %}Sign In - {{ app_name }}{% endblock %}
 
 {% block content %}
-<div class="container d-flex justify-content-center align-items-center" style="min-height: calc(100vh - 56px);">
+<div class="auth-page-wrapper p-3">
     <div class="row w-100 justify-content-center">
         <div class="col-md-5 col-lg-4">
-            <div class="card auth-card shadow-lg border-0 bg-navbar border-dark-30">
-                <div class="card-body p-5">
+            <div class="card auth-card border-0">
+                <div class="card-body p-4 p-md-5">
                     <!-- Header -->
                     <div class="text-center mb-4">
                         <div class="auth-icon-wrapper mb-3 mx-auto bg-dark-20 border border-dark-30">
@@ -28,15 +28,15 @@
                         <div class="mb-3">
                             <label for="email" class="form-label text-light-50 small fw-medium text-uppercase tracking-wider">Email Address</label>
                             <div class="input-group">
-                                <span class="input-group-text bg-dark-20 border-dark-30 text-light-50"><i class="bi bi-envelope"></i></span>
-                                <input type="email" class="form-control bg-dark-20 border-dark-30 text-white" id="email" placeholder="operator@example.com" required autocomplete="email">
+                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                <input type="email" class="form-control" id="email" placeholder="operator@example.com" required autocomplete="email">
                             </div>
                         </div>
                         <div class="mb-4">
                             <label for="password" class="form-label text-light-50 small fw-medium text-uppercase tracking-wider">Password</label>
                             <div class="input-group">
-                                <span class="input-group-text bg-dark-20 border-dark-30 text-light-50"><i class="bi bi-key"></i></span>
-                                <input type="password" class="form-control bg-dark-20 border-dark-30 text-white" id="password" placeholder="Enter password" required autocomplete="current-password">
+                                <span class="input-group-text"><i class="bi bi-key"></i></span>
+                                <input type="password" class="form-control" id="password" placeholder="Enter password" required autocomplete="current-password">
                             </div>
                         </div>
                         <button type="submit" class="btn btn-primary w-100 py-2.5 fw-semibold transition-all d-flex align-items-center justify-content-center gap-2" id="login-submit-btn">
@@ -99,7 +99,11 @@
                 const data = await response.json();
 
                 if (!response.ok) {
-                    throw new Error(data.detail || "Authentication credentials verification failed.");
+                    let msg = data.detail;
+                    if (Array.isArray(data.detail)) {
+                        msg = data.detail.map(e => `${e.loc[e.loc.length - 1]}: ${e.msg}`).join(", ");
+                    }
+                    throw new Error(msg || "Authentication credentials verification failed.");
                 }
 
                 // Store token inside local storage
@@ -107,7 +111,6 @@
                 localStorage.setItem("role", data.role);
                 localStorage.setItem("user_email", emailVal);
 
-                // Differentiate redirect depending on token cookie setting
                 window.location.href = "/";
             } catch (err) {
                 errorMessage.textContent = err.message;

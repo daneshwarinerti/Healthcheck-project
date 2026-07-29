@@ -3,11 +3,11 @@
 {% block title %}Register - {{ app_name }}{% endblock %}
 
 {% block content %}
-<div class="container d-flex justify-content-center align-items-center" style="min-height: calc(100vh - 56px);">
+<div class="auth-page-wrapper p-3">
     <div class="row w-100 justify-content-center">
         <div class="col-md-6 col-lg-5">
-            <div class="card auth-card shadow-lg border-0 bg-navbar border-dark-30">
-                <div class="card-body p-5">
+            <div class="card auth-card border-0">
+                <div class="card-body p-4 p-md-5">
                     <!-- Header -->
                     <div class="text-center mb-4">
                         <div class="auth-icon-wrapper mb-3 mx-auto bg-dark-20 border border-dark-30">
@@ -28,22 +28,22 @@
                         <div class="row g-3 mb-3">
                             <div class="col-6">
                                 <label for="first_name" class="form-label text-light-50 small fw-medium text-uppercase tracking-wider">First Name</label>
-                                <input type="text" class="form-control bg-dark-20 border-dark-30 text-white" id="first_name" required placeholder="John">
+                                <input type="text" class="form-control" id="first_name" required placeholder="John">
                             </div>
                             <div class="col-6">
                                 <label for="last_name" class="form-label text-light-50 small fw-medium text-uppercase tracking-wider">Last Name</label>
-                                <input type="text" class="form-control bg-dark-20 border-dark-30 text-white" id="last_name" required placeholder="Doe">
+                                <input type="text" class="form-control" id="last_name" required placeholder="Doe">
                             </div>
                         </div>
 
                         <div class="mb-3">
                             <label for="email" class="form-label text-light-50 small fw-medium text-uppercase tracking-wider">Email Address</label>
-                            <input type="email" class="form-control bg-dark-20 border-dark-30 text-white" id="email" placeholder="john.doe@example.com" required>
+                            <input type="email" class="form-control" id="email" placeholder="john.doe@example.com" required>
                         </div>
 
                         <div class="mb-3">
                             <label for="role" class="form-label text-light-50 small fw-medium text-uppercase tracking-wider">Access Role</label>
-                            <select class="form-select bg-dark-20 border-dark-30 text-white pointer" id="role" required>
+                            <select class="form-select pointer" id="role" required>
                                 <option value="Viewer">Viewer (Read-Only Dashboard)</option>
                                 <option value="Operator">Operator (Ack alerts, trigger checks)</option>
                                 <option value="Admin">Admin (Full privileges)</option>
@@ -53,11 +53,11 @@
                         <div class="row g-3 mb-4">
                             <div class="col-6">
                                 <label for="password" class="form-label text-light-50 small fw-medium text-uppercase tracking-wider">Password</label>
-                                <input type="password" class="form-control bg-dark-20 border-dark-30 text-white" id="password" required placeholder="••••••••">
+                                <input type="password" class="form-control" id="password" required placeholder="••••••••">
                             </div>
                             <div class="col-6">
                                 <label for="confirm_password" class="form-label text-light-50 small fw-medium text-uppercase tracking-wider">Confirm</label>
-                                <input type="password" class="form-control bg-dark-20 border-dark-30 text-white" id="confirm_password" required placeholder="••••••••">
+                                <input type="password" class="form-control" id="confirm_password" required placeholder="••••••••">
                             </div>
                         </div>
 
@@ -188,11 +188,11 @@
                 const data = await response.json();
 
                 if (!response.ok) {
-                    let msg = data.detail || "Account registration failure.";
-                    if (data.errors && data.errors.length > 0) {
-                        msg = data.errors.join(", ");
+                    let msg = data.detail;
+                    if (Array.isArray(data.detail)) {
+                        msg = data.detail.map(e => `${e.loc[e.loc.length - 1]}: ${e.msg}`).join(", ");
                     }
-                    throw new Error(msg);
+                    throw new Error(msg || "Account registration failure.");
                 }
 
                 // Redirect to login upon successful creation
