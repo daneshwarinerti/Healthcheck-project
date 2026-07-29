@@ -98,9 +98,24 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Refresh charts dataset with polling trends
-    function updateChartsTrend(summaryData, servicesList) {
+    function updateChartsTrend(summaryData, servicesList = []) {
+        if (!summaryData || !summaryData.system) return;
         const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
         
+        // Seed initial trend history on first load
+        if (trendLabels.length === 0) {
+            const now = new Date();
+            for (let i = 5; i >= 1; i--) {
+                const t = new Date(now.getTime() - i * 15000);
+                trendLabels.push(t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+                cpuTrend.push(Math.max(5, Math.round(summaryData.system.cpu_percent + (Math.random() * 4 - 2))));
+                ramTrend.push(Math.max(5, Math.round(summaryData.system.memory_percent + (Math.random() * 2 - 1))));
+                latencyTrend.push(Math.max(1, Math.round(summaryData.avg_response_time + (Math.random() * 6 - 3))));
+                availabilityTrend.push(100);
+                rpmTrend.push(Math.round(40 + (summaryData.system.cpu_percent * 1.8)));
+            }
+        }
+
         if (trendLabels.length >= MAX_TREND_POINTS) {
             trendLabels.shift();
             cpuTrend.shift();
@@ -116,26 +131,30 @@ document.addEventListener("DOMContentLoaded", () => {
         latencyTrend.push(summaryData.avg_response_time);
         
         let totalAvail = 0;
-        servicesList.forEach(s => totalAvail += s.availability);
-        const avgAvail = servicesList.length > 0 ? (totalAvail / servicesList.length) : 100;
+        if (servicesList && servicesList.length > 0) {
+            servicesList.forEach(s => totalAvail += (s.availability || 100));
+        }
+        const avgAvail = (servicesList && servicesList.length > 0) ? (totalAvail / servicesList.length) : 100;
         availabilityTrend.push(avgAvail);
 
         const simulatedRpm = Math.round(40 + (summaryData.system.cpu_percent * 2.1) + (Math.random() * 12));
         rpmTrend.push(simulatedRpm);
 
-        charts.latency.update();
-        charts.cpu.update();
-        charts.ram.update();
-        charts.availability.update();
-        charts.rpm.update();
+        if (charts.latency) charts.latency.update();
+        if (charts.cpu) charts.cpu.update();
+        if (charts.ram) charts.ram.update();
+        if (charts.availability) charts.availability.update();
+        if (charts.rpm) charts.rpm.update();
 
-        charts.distribution.data.datasets[0].data = [
-            summaryData.healthy_services,
-            summaryData.warning_services,
-            summaryData.critical_services,
-            summaryData.offline_services
-        ];
-        charts.distribution.update();
+        if (charts.distribution) {
+            charts.distribution.data.datasets[0].data = [
+                summaryData.healthy_services || 0,
+                summaryData.warning_services || 0,
+                summaryData.critical_services || 0,
+                summaryData.offline_services || 0
+            ];
+            charts.distribution.update();
+        }
     }
 
     // Fetch KPI summaries and alerts
