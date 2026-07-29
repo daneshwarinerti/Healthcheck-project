@@ -19,8 +19,11 @@ def setup_logging() -> None:
     log_format = "%(asctime)s [%(levelname)s] %(name)s - %(message)s"
     formatter = logging.Formatter(log_format)
     
-    # 1. Create logs directory
-    os.makedirs("logs", exist_ok=True)
+    # 1. Create logs directory safely
+    try:
+        os.makedirs("logs", exist_ok=True)
+    except Exception as e:
+        print(f"Logging Notice: File logging initialization deferred: {e}")
     
     # Configure base root logger
     root_logger = logging.getLogger()

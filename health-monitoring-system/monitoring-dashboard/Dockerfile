@@ -7,8 +7,9 @@ ENV PYTHONDONTWRITEBYTECODE=1
 # Display Python logs immediately
 ENV PYTHONUNBUFFERED=1
 
-# Set the working directory inside the container
+# Set working directory and create logs directory with permissions for non-root containers
 WORKDIR /app
+RUN mkdir -p /app/logs && chmod -R 777 /app
 
 # Copy only the dependency file first
 COPY requirements.txt .
@@ -18,6 +19,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the application source code
 COPY . .
+
+# Ensure open write permissions for non-root app user
+RUN chmod -R 777 /app
 
 # Expose the application port
 EXPOSE 8000
