@@ -32,9 +32,9 @@ def render_dashboard(
     summary = DashboardService.get_dashboard_summary(db)
 
     return templates.TemplateResponse(
-        "dashboard.html", 
-        {
-            "request": request, 
+        request=request,
+        name="dashboard.html", 
+        context={
             "app_name": "SRE Monitoring",
             "user": current_user,
             "summary": summary

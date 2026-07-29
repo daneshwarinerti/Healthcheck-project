@@ -29,7 +29,7 @@ def render_login(request: Request, current_user = Depends(get_current_user_optio
     """
     if current_user:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
-    return templates.TemplateResponse("login.html", {"request": request, "app_name": "SRE Monitoring"})
+    return templates.TemplateResponse(request=request, name="login.html", context={"app_name": "SRE Monitoring"})
 
 @router.get("/register", response_class=HTMLResponse)
 def render_register(request: Request, current_user = Depends(get_current_user_optional)):
@@ -38,7 +38,7 @@ def render_register(request: Request, current_user = Depends(get_current_user_op
     """
     if current_user:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
-    return templates.TemplateResponse("register.html", {"request": request, "app_name": "SRE Monitoring"})
+    return templates.TemplateResponse(request=request, name="register.html", context={"app_name": "SRE Monitoring"})
 
 @router.get("/logout")
 def logout(response: Response, request: Request, db: Session = Depends(get_db), current_user = Depends(get_current_user_optional)):

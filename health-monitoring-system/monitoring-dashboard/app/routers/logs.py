@@ -34,9 +34,9 @@ def render_logs_page(
         
     services = service_repo.get_multi(db)
     return templates.TemplateResponse(
-        "service_logs.html",
-        {
-            "request": request,
+        request=request,
+        name="service_logs.html",
+        context={
             "app_name": "SRE Monitoring",
             "user": current_user,
             "services": services

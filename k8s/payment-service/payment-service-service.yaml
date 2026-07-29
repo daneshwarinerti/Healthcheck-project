@@ -6,13 +6,12 @@ metadata:
   labels:
     app: payment-service
     app.kubernetes.io/name: payment-service
-    app.kubernetes.io/component: microservice
+    app.kubernetes.io/component: backend-service
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - port: 8002
       targetPort: 8002
       name: http
-      protocol: TCP
   selector:
     app: payment-service

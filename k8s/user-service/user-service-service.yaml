@@ -6,13 +6,12 @@ metadata:
   labels:
     app: user-service
     app.kubernetes.io/name: user-service
-    app.kubernetes.io/component: microservice
+    app.kubernetes.io/component: backend-service
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - port: 8001
       targetPort: 8001
       name: http
-      protocol: TCP
   selector:
     app: user-service

@@ -219,10 +219,10 @@ app.include_router(servers_router.router)
 app.include_router(health_router.router)
 
 # Page Routes for HTML templates
-@app.get("/", response_class=HTMLResponse, include_in_schema=False)
-def render_dashboard(request: Request):
-    return templates.TemplateResponse("dashboard.html", {"request": request, "app_name": APP_NAME})
+@app.get("/", response_class=HTMLResponse)
+def index(request: Request):
+    return templates.TemplateResponse(request=request, name="dashboard.html", context={"app_name": APP_NAME})
 
-@app.get("/login", response_class=HTMLResponse, include_in_schema=False)
-def render_login(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request, "app_name": APP_NAME})
+@app.get("/login", response_class=HTMLResponse)
+def login_page(request: Request):
+    return templates.TemplateResponse(request=request, name="login.html", context={"app_name": APP_NAME})

@@ -1,149 +1,125 @@
-# SRE Infrastructure Health Monitoring System
+# 🏥 Production Health Monitoring System on Amazon EKS
 
-This project is a production-grade mini system designed to monitor application target nodes. It comprises a central **Monitoring Dashboard** and three independent running microservices (**User Service**, **Payment Service**, and **Notification Service**).
+A enterprise-grade, microservice-based Health Monitoring System running on **Amazon EKS**, containerized with **Docker**, stored in **Amazon ECR**, routed by **AWS Application Load Balancer (ALB)**, backed by **Amazon EBS Storage**, and monitored with **kube-prometheus-stack (Prometheus & Grafana)**.
 
-```text
-                     Browser (UI Portal)
-                       │
-                       ▼
-          Health Monitoring Dashboard (Port 8000)
-                       │
-       ┌────────────────┼────────────────┐
-       ▼                ▼                ▼
-  User Service     Payment Service   Notification Service
-   (Port 8001)      (Port 8002)       (Port 8003)
-       │                │                │
-    /health          /health          /health
-       │                │                │
-       └────────────────┼────────────────┘
-                        │
-                PostgreSQL / SQLite
+---
+
+## 🏗️ Architecture Overview Diagram
+
+```mermaid
+flowchart TD
+    subgraph Developer Workflow
+        DEV[Developer Push Code] -->|git push| GH[GitHub Repository]
+    end
+
+    subgraph GitHub Actions CI/CD Pipeline
+        GH --> WORKFLOW[GitHub Actions Workflow .github/workflows/deploy.yml]
+        WORKFLOW --> TEST[Stage 1: Unit & Integration Tests]
+        TEST --> BUILD[Stage 2: Build Docker Images tagged with SHA & latest]
+        BUILD --> ECR_PUSH[Stage 3: Authenticate & Push to Amazon ECR]
+        ECR_PUSH --> EKS_AUTH[Stage 4: Authenticate to Amazon EKS]
+        EKS_AUTH --> ROLLOUT[Stage 5: Perform Zero-Downtime Rolling Update]
+        ROLLOUT --> VERIFY[Stage 6: Verify Deployment Rollout Status]
+    end
+
+    subgraph AWS Cloud Infrastructure (us-east-1)
+        subgraph EKS Cluster: health-monitoring-cluster (Namespace: health-monitoring)
+            ALB[AWS Application Load Balancer] --> INGRESS[ALB Ingress target-type: ip]
+            INGRESS --> DASHBOARD[monitoring-dashboard 2 Replicas]
+            INGRESS --> USER_SVC[user-service 2 Replicas]
+            INGRESS --> PAY_SVC[payment-service 2 Replicas]
+            INGRESS --> NOTIF_SVC[notification-service 2 Replicas]
+            
+            DASHBOARD --> DB[(PostgreSQL 15 Persistent EBS gp3)]
+            DASHBOARD --> REDIS[(Redis 7 Cache)]
+            DASHBOARD --> RABBIT[(RabbitMQ 3 Management Persistent EBS gp3)]
+        end
+        
+        subgraph Monitoring Namespace (monitoring)
+            PROM[Prometheus Server] --> GRAFANA[Grafana Dashboards :3000]
+            PROM --> OPERATOR[Prometheus Operator]
+            PROM --> EXPORTER[Node Exporter & kube-state-metrics]
+        end
+    end
 ```
 
 ---
 
-## Architecture & Technical Features
+## 🔑 GitHub Secrets Configuration
 
-1. **Clean Architecture Patterns**: Built using FastAPI, SQLAlchemy, Repository Patterns, Services Layer, Pydantic v2 schemas, and discrete API Routers.
-2. **Double-Layer Authentication Security**: Validates JWT access tokens from both HTTP Headers (REST API queries) and Secure HTTP-Only Cookies (browser page requests).
-3. **SRE Operator RBAC Roles**:
-   - `Admin`: Full control over target node configs (CRUD operations, registration).
-   - `Operator`: Can trigger manual check sweeps and acknowledge active alerts.
-   - `Viewer`: Read-only telemetry views.
-4. **Grafana-Style Dark UI**: Glassmorphic styling, real-time Chart.js graphs, 100-check timeline grids, incident lists, and system resource monitors.
-5. **Background Telemetry Scheduler**: Uses APScheduler executing parallel HTTP GET probes and TCP socket validation streams (Postgre, Redis, RabbitMQ) every 15 seconds.
-6. **Separated Operational Logs**: Operations are separated into dedicated log files under `logs/`:
-   - `logs/application.log`: Application runtime events.
-   - `logs/health.log`: Automated target probe check outputs.
-   - `logs/audit.log`: Administrative operator actions.
-   - `logs/scheduler.log`: APScheduler daemon threads trace.
-7. **Multi-Environment configuration Loader**: Selects variables dynamically based on `APP_ENV` (loads `.env.development`, `.env.testing`, or `.env.production`).
+To enable automated CI/CD deployment, configure the following secrets in your GitHub Repository under **Settings -> Secrets and variables -> Actions**:
+
+| Secret Name | Description | Example Value |
+| :--- | :--- | :--- |
+| `AWS_ACCESS_KEY_ID` | AWS IAM User Access Key | `AKIAXXXXXXXXXXXXXXXX` |
+| `AWS_SECRET_ACCESS_KEY` | AWS IAM User Secret Key | `wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY` |
+| `AWS_REGION` | AWS Target Region | `us-east-1` |
+| `AWS_ACCOUNT_ID` | 12-digit AWS Account Number | `552823821096` |
+| `EKS_CLUSTER_NAME` | Name of your EKS Cluster | `health-monitoring-cluster` |
 
 ---
 
-## Microservices API Specification
+## 🛡️ AWS IAM OIDC Federation Setup (Best Practice)
 
-Each of the three services (`User`, `Payment`, `Notification`) exposes the following SRE endpoints:
-- `GET /`: API entry point listing active coordinates.
-- `GET /health`: Returns CPU/memory utilization, dynamic uptime calculations, server hostname, and timestamp.
-- `GET /info`: Describes environmental settings.
-- `GET /version`: Exposes current software deployment version.
-- `GET /metrics`: Yields live request counts and uptime duration.
+If using GitHub OIDC instead of static AWS Access Keys:
 
----
-
-## Installation & Setup
-
-### 1. Install Dependencies
-Run the install command from the root directory to set up all required libraries:
-```bash
-pip install -r requirements.txt
-```
-
-### 2. Configure Database & Seed Data
-Navigate to the dashboard directory, run database migrations, and seed default configs:
-```bash
-cd health-monitoring-system/monitoring-dashboard
-
-# Create database tables schema
-alembic upgrade head
-
-# Seed initial operator users and targets
-python app/seed.py
-```
-
-### 3. Run Applications
-Start the microservices and the dashboard in separate terminal prompts:
-
-* **Start User Service (Port 8001)**:
-  ```bash
-  cd health-monitoring-system/user-service
-  uvicorn main:app --reload --port 8001
-  ```
-
-* **Start Payment Service (Port 8002)**:
-  ```bash
-  cd health-monitoring-system/payment-service
-  uvicorn main:app --reload --port 8002
-  ```
-
-* **Start Notification Service (Port 8003)**:
-  ```bash
-  cd health-monitoring-system/notification-service
-  uvicorn main:app --reload --port 8003
-  ```
-
-* **Start SRE Monitoring Dashboard (Port 8000)**:
-  ```bash
-  cd health-monitoring-system/monitoring-dashboard
-  uvicorn app.main:app --reload --port 8000
-  ```
-
----
-
-## Running Unit & Integration Tests
-
-We maintain a comprehensive pytest suite verifying security tokens, validations, database transactions, and network timeout states.
-
-Run tests using the following command inside `monitoring-dashboard/`:
-```bash
-pytest
+### 1. IAM Role Trust Policy (`github-oidc-trust-policy.json`)
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Federated": "arn:aws:iam::552823821096:oidc-provider/token.actions.githubusercontent.com"
+      },
+      "Action": "sts:AssumeRoleWithWebIdentity",
+      "Condition": {
+        "StringEquals": {
+          "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
+        },
+        "StringLike": {
+          "token.actions.githubusercontent.com:sub": "repo:<YOUR_GITHUB_USERNAME>/Healthcheck-project:*"
+        }
+      }
+    }
+  ]
+}
 ```
 
 ---
 
-## Configuration & Environment Variables
+## 🔄 Emergency Rollback Procedure
 
-Select the environment by setting the `APP_ENV` variable in your terminal session:
+If a deployed build encounters runtime issues, use `kubectl rollout undo` to instantly revert to the previous revision without downtime:
+
+### Revert a Deployment to Previous Revision
 ```powershell
-# PowerShell
-$env:APP_ENV="production"
-# Command Prompt
-set APP_ENV=production
+# Rollback monitoring-dashboard
+kubectl rollout undo deployment/monitoring-dashboard -n health-monitoring
+
+# Rollback backend services
+kubectl rollout undo deployment/user-service -n health-monitoring
+kubectl rollout undo deployment/payment-service -n health-monitoring
+kubectl rollout undo deployment/notification-service -n health-monitoring
 ```
-- **Development** (`.env.development`): Configured with `health_dev.db`.
-- **Testing** (`.env.testing`): Configured with `test_health.db` (auto-cleaned after test runs).
-- **Production** (`.env.production`): Configured with production SQL databases.
+
+### View Deployment Revision History
+```powershell
+kubectl rollout history deployment/monitoring-dashboard -n health-monitoring
+```
 
 ---
 
-## Authentication Credentials
+## 📊 Live Verification Commands
 
-* **System Administrator**:
-  - Email: `admin@example.com`
-  - Password: `Admin@123`
-  
-* **SRE Operator**:
-  - Email: `operator@example.com`
-  - Password: `Operator@123`
+```powershell
+# Check all microservices and databases
+kubectl get pods -n health-monitoring
+kubectl get pvc -n health-monitoring
+kubectl get svc -n health-monitoring
+kubectl get ingress -n health-monitoring
 
----
-
-## Future DevOps Operations Roadmap
-
-1. **Containerization**: Define separate `Dockerfiles` for each service and compile image targets.
-2. **Local Orchestration**: Write a `docker-compose.yml` defining services, networking overlays, Postgres DB configurations, and volume directories.
-3. **Cloud Kubernetes Deployments**: Scaffold Kubernetes YAML manifests (Deployments, Services, ConfigMaps, Secrets, Ingress controllers) for cloud orchestration.
-4. **Helm Package Manager**: Package YAML templates into Helm Charts for versioned, parameter-driven deployments.
-5. **CI/CD Integration**: Construct automated GitHub Actions pipelines to run pytests, compile Docker images, and push tag releases to registry hubs.
-6. **Prometheus & Grafana**: Export standardized metrics targets (`/metrics`) to Prometheus servers and display telemetry charts on Grafana dashboards.
+# Check monitoring stack
+kubectl get pods -n monitoring
+```

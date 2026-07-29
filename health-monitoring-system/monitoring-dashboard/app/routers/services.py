@@ -34,9 +34,9 @@ def render_create_service(
     Renders the service creation form. Admin only.
     """
     return templates.TemplateResponse(
-        "service_form.html",
-        {
-            "request": request,
+        request=request,
+        name="service_form.html",
+        context={
             "app_name": "SRE Monitoring",
             "user": current_user,
             "service": None
@@ -58,9 +58,9 @@ def render_edit_service(
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
         
     return templates.TemplateResponse(
-        "service_form.html",
-        {
-            "request": request,
+        request=request,
+        name="service_form.html",
+        context={
             "app_name": "SRE Monitoring",
             "user": current_user,
             "service": service
@@ -87,9 +87,9 @@ def render_service_detail(
         
     rich_service = service_repo.get_service_response(db, service)
     return templates.TemplateResponse(
-        "service_logs.html",
-        {
-            "request": request,
+        request=request,
+        name="service_logs.html",
+        context={
             "app_name": "SRE Monitoring",
             "user": current_user,
             "service": rich_service
