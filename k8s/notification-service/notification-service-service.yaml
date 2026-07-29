@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/name: notification-service
     app.kubernetes.io/component: microservice
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
     - port: 8003
       targetPort: 8003

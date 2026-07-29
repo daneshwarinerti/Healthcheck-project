@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/name: user-service
     app.kubernetes.io/component: microservice
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
     - port: 8001
       targetPort: 8001
