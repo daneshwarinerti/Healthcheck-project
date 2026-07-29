@@ -4,6 +4,7 @@ metadata:
   name: postgres
   namespace: health-monitoring
   labels:
+    app: postgres
     app.kubernetes.io/name: postgres
     app.kubernetes.io/component: database
 spec:
@@ -14,4 +15,4 @@ spec:
       name: postgres
       protocol: TCP
   selector:
-    app.kubernetes.io/name: postgres
+    app: postgres

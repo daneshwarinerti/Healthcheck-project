@@ -4,6 +4,7 @@ metadata:
   name: payment-service
   namespace: health-monitoring
   labels:
+    app: payment-service
     app.kubernetes.io/name: payment-service
     app.kubernetes.io/component: microservice
 spec:
@@ -15,10 +16,11 @@ spec:
       maxUnavailable: 0
   selector:
     matchLabels:
-      app.kubernetes.io/name: payment-service
+      app: payment-service
   template:
     metadata:
       labels:
+        app: payment-service
         app.kubernetes.io/name: payment-service
         app.kubernetes.io/component: microservice
     spec:

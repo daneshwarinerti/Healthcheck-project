@@ -4,6 +4,7 @@ metadata:
   name: payment-service
   namespace: health-monitoring
   labels:
+    app: payment-service
     app.kubernetes.io/name: payment-service
     app.kubernetes.io/component: microservice
 spec:
@@ -14,4 +15,4 @@ spec:
       name: http
       protocol: TCP
   selector:
-    app.kubernetes.io/name: payment-service
+    app: payment-service

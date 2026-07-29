@@ -4,6 +4,7 @@ metadata:
   name: notification-service
   namespace: health-monitoring
   labels:
+    app: notification-service
     app.kubernetes.io/name: notification-service
     app.kubernetes.io/component: microservice
 spec:
@@ -15,10 +16,11 @@ spec:
       maxUnavailable: 0
   selector:
     matchLabels:
-      app.kubernetes.io/name: notification-service
+      app: notification-service
   template:
     metadata:
       labels:
+        app: notification-service
         app.kubernetes.io/name: notification-service
         app.kubernetes.io/component: microservice
     spec:

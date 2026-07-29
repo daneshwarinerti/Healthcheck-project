@@ -4,11 +4,13 @@ metadata:
   name: rabbitmq-pvc
   namespace: health-monitoring
   labels:
+    app: rabbitmq
     app.kubernetes.io/name: rabbitmq
     app.kubernetes.io/component: broker
 spec:
   accessModes:
     - ReadWriteOnce
+  storageClassName: gp2
   resources:
     requests:
       storage: 10Gi

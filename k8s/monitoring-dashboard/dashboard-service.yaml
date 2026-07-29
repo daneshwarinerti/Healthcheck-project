@@ -4,6 +4,7 @@ metadata:
   name: monitoring-dashboard
   namespace: health-monitoring
   labels:
+    app: monitoring-dashboard
     app.kubernetes.io/name: monitoring-dashboard
     app.kubernetes.io/component: dashboard
 spec:
@@ -14,4 +15,4 @@ spec:
       name: http
       protocol: TCP
   selector:
-    app.kubernetes.io/name: monitoring-dashboard
+    app: monitoring-dashboard

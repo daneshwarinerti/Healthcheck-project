@@ -4,6 +4,7 @@ metadata:
   name: rabbitmq
   namespace: health-monitoring
   labels:
+    app: rabbitmq
     app.kubernetes.io/name: rabbitmq
     app.kubernetes.io/component: broker
 spec:
@@ -12,10 +13,11 @@ spec:
     type: Recreate
   selector:
     matchLabels:
-      app.kubernetes.io/name: rabbitmq
+      app: rabbitmq
   template:
     metadata:
       labels:
+        app: rabbitmq
         app.kubernetes.io/name: rabbitmq
         app.kubernetes.io/component: broker
     spec:

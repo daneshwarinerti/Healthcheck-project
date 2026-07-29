@@ -4,11 +4,13 @@ metadata:
   name: postgres-pvc
   namespace: health-monitoring
   labels:
+    app: postgres
     app.kubernetes.io/name: postgres
     app.kubernetes.io/component: database
 spec:
   accessModes:
     - ReadWriteOnce
+  storageClassName: gp2
   resources:
     requests:
       storage: 10Gi

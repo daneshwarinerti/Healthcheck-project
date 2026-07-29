@@ -4,6 +4,7 @@ metadata:
   name: user-service
   namespace: health-monitoring
   labels:
+    app: user-service
     app.kubernetes.io/name: user-service
     app.kubernetes.io/component: microservice
 spec:
@@ -14,4 +15,4 @@ spec:
       name: http
       protocol: TCP
   selector:
-    app.kubernetes.io/name: user-service
+    app: user-service

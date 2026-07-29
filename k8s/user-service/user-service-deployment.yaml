@@ -4,6 +4,7 @@ metadata:
   name: user-service
   namespace: health-monitoring
   labels:
+    app: user-service
     app.kubernetes.io/name: user-service
     app.kubernetes.io/component: microservice
 spec:
@@ -15,10 +16,11 @@ spec:
       maxUnavailable: 0
   selector:
     matchLabels:
-      app.kubernetes.io/name: user-service
+      app: user-service
   template:
     metadata:
       labels:
+        app: user-service
         app.kubernetes.io/name: user-service
         app.kubernetes.io/component: microservice
     spec:

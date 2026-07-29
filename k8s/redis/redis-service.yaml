@@ -4,6 +4,7 @@ metadata:
   name: redis
   namespace: health-monitoring
   labels:
+    app: redis
     app.kubernetes.io/name: redis
     app.kubernetes.io/component: cache
 spec:
@@ -14,4 +15,4 @@ spec:
       name: redis
       protocol: TCP
   selector:
-    app.kubernetes.io/name: redis
+    app: redis
