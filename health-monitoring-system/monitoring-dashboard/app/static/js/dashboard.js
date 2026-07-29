@@ -69,14 +69,18 @@ document.addEventListener("DOMContentLoaded", () => {
             options: { ...chartOptions(), scales: { x: { display: false }, y: { min: 0, max: 100, grid: { color: gridColor }, ticks: { color: tickColor, font: labelFont } } } }
         });
 
+        const initialHealthy = parseInt(document.getElementById("card-healthy-services")?.textContent || "0");
+        const initialWarning = parseInt(document.getElementById("card-warning-services")?.textContent || "0");
+        const initialCriticalOffline = parseInt(document.getElementById("card-critical-offline-services")?.textContent || "0");
+
         // 5. Distribution Doughnut Chart
         charts.distribution = new Chart(document.getElementById('chart-distribution').getContext('2d'), {
             type: 'doughnut',
             data: {
                 labels: ['Healthy', 'Warning', 'Critical', 'Offline'],
                 datasets: [{
-                    data: [0, 0, 0, 0],
-                    backgroundColor: ['#73BF69', '#FADE2A', '#F2495C', '#8E8E8E'],
+                    data: [initialHealthy, initialWarning, 0, initialCriticalOffline],
+                    backgroundColor: ['#73BF69', '#FADE2A', '#F2495C', '#E02424'],
                     borderWidth: 2,
                     borderColor: '#181b1f'
                 }]
@@ -85,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
-                cutout: '76%'
+                cutout: '72%'
             }
         });
 
