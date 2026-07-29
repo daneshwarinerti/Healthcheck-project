@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
 {% block title %}
-    {% if service %}Service Details: {{ service.name }}{% else %}Logs & Audit Explorer{% endif %} - {{ app_name }}
+    {% if service %}Service details: {{ service.name }}{% else %}Logs Ledger Explorer{% endif %} - {{ app_name }}
 {% endblock %}
 
 {% block header_title %}
-    {% if service %}Service Details Profile{% else %}Logs Explorer{% endif %}
+    {% if service %}Service details Profile{% else %}Logs ledger Explorer{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -16,8 +16,9 @@
 <div class="row g-3 mb-4">
     <!-- Back control -->
     <div class="col-12">
-        <a href="/" class="btn btn-outline-secondary btn-sm px-3 transition-all">
-            <i class="bi bi-arrow-left me-1"></i>Back to Live Dashboard
+        <a href="/" class="btn-primary-enterprise px-3 py-1.5 text-decoration-none d-inline-flex align-items-center gap-1.5 transition-all" style="background-color: var(--bg-surface); border-color: var(--border-color); color: var(--text-secondary);">
+            <i data-lucide="arrow-left" style="width: 15px; height: 15px;"></i>
+            <span>Back to Dashboard</span>
         </a>
     </div>
     
@@ -25,30 +26,30 @@
     <div class="col-12 d-flex flex-wrap justify-content-between align-items-center gap-3">
         <div>
             <h2 class="text-white fw-bold m-0 d-flex align-items-center gap-2">
-                <i class="bi bi-hdd-network-fill text-primary"></i>
+                <i data-lucide="server" class="text-primary"></i>
                 <span>{{ service.name }}</span>
             </h2>
-            <p class="text-light-50 small m-0 mt-1">{{ service.description or 'No service description configured.' }}</p>
+            <p class="text-secondary small m-0 mt-1">{{ service.description or 'No service description configured.' }}</p>
         </div>
         
         <div class="d-flex gap-2">
             <!-- Manual Check Restart -->
-            <button class="btn btn-outline-primary btn-sm px-3 d-flex align-items-center gap-1.5 transition-all" id="btn-manual-check">
+            <button class="btn-primary-enterprise px-3 py-1.5 d-flex align-items-center gap-1.5 transition-all" id="btn-manual-check">
                 <span class="spinner-border spinner-border-sm d-none" id="check-spinner"></span>
-                <i class="bi bi-arrow-clockwise" id="check-icon"></i>
+                <i data-lucide="refresh-cw" id="check-icon" style="width: 14px; height: 14px;"></i>
                 <span>Restart Check</span>
             </button>
             
             <!-- Acknowledge alerts -->
-            <button class="btn btn-outline-warning btn-sm px-3 d-flex align-items-center gap-1.5 transition-all" id="btn-ack-alerts">
-                <i class="bi bi-shield-check"></i>
+            <button class="btn-primary-enterprise px-3 py-1.5 d-flex align-items-center gap-1.5 transition-all text-warning" style="background-color: var(--bg-surface); border-color: var(--border-color);" id="btn-ack-alerts">
+                <i data-lucide="shield-alert" style="width: 14px; height: 14px;"></i>
                 <span>Acknowledge Alerts</span>
             </button>
 
             <!-- Edit (Admin only) -->
             {% if user.role == "Admin" %}
-            <a href="/services/{{ service.id }}/edit" class="btn btn-outline-secondary btn-sm px-3 d-flex align-items-center gap-1.5 transition-all">
-                <i class="bi bi-gear-fill"></i>
+            <a href="/services/{{ service.id }}/edit" class="btn-primary-enterprise px-3 py-1.5 d-flex align-items-center gap-1.5 transition-all text-secondary" style="background-color: var(--bg-surface); border-color: var(--border-color); text-decoration: none;">
+                <i data-lucide="settings" style="width: 14px; height: 14px;"></i>
                 <span>Edit Config</span>
             </a>
             {% endif %}
@@ -60,63 +61,52 @@
 <div class="row g-3 mb-4">
     <!-- Status Badge -->
     <div class="col-6 col-md-3 col-lg-2">
-        <div class="card stat-card bg-navbar border border-dark-30 text-white shadow-sm h-100 text-center py-2">
-            <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                <span class="small text-light-50 text-uppercase tracking-wider">Status</span>
-                <div class="mt-2">
-                    <span id="detail-status-badge" class="badge px-3 py-2 fs-6 status-badge-{{ service.status | lower }}">{{ service.status }}</span>
-                </div>
-            </div>
+        <div class="card-enterprise text-center py-2 h-100 d-flex flex-column justify-content-center align-items-center">
+            <span class="form-label-enterprise mb-2" style="font-size:0.65rem;">Status</span>
+            <span id="detail-status-badge" class="badge-status {{ service.status | lower }}">
+                <span class="status-dot {{ service.status | lower }}"></span>
+                {{ service.status }}
+            </span>
         </div>
     </div>
 
     <!-- Availability % Card -->
     <div class="col-6 col-md-3 col-lg-2">
-        <div class="card stat-card bg-navbar border border-dark-30 text-white shadow-sm h-100 text-center py-2">
-            <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                <span class="small text-light-50 text-uppercase tracking-wider">Availability</span>
-                <span class="fs-3 fw-bold text-glow mt-1 text-white" id="detail-availability-percent">{{ service.availability }}%</span>
-            </div>
+        <div class="card-enterprise text-center py-2 h-100 d-flex flex-column justify-content-center align-items-center">
+            <span class="form-label-enterprise mb-1" style="font-size:0.65rem;">Availability</span>
+            <span class="fs-4 fw-bold text-success" id="detail-availability-percent">{{ service.availability }}%</span>
         </div>
     </div>
 
     <!-- Avg Latency Card -->
     <div class="col-6 col-md-3 col-lg-2">
-        <div class="card stat-card bg-navbar border border-dark-30 text-white shadow-sm h-100 text-center py-2">
-            <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                <span class="small text-light-50 text-uppercase tracking-wider">Current Latency</span>
-                <span class="fs-3 fw-bold text-info mt-1" id="detail-latency">{{ service.response_time }} <span class="small" style="font-size:0.6em;">ms</span></span>
-            </div>
+        <div class="card-enterprise text-center py-2 h-100 d-flex flex-column justify-content-center align-items-center">
+            <span class="form-label-enterprise mb-1" style="font-size:0.65rem;">Latency</span>
+            <span class="fs-4 fw-bold text-info" id="detail-latency">{{ service.response_time }}<span class="small font-normal" style="font-size:0.65rem; margin-left: 2px;">ms</span></span>
         </div>
     </div>
 
     <!-- Port & Hostname Card -->
     <div class="col-6 col-md-3 col-lg-2">
-        <div class="card stat-card bg-navbar border border-dark-30 text-white shadow-sm h-100 text-center py-2">
-            <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                <span class="small text-light-50 text-uppercase tracking-wider">Coordinates</span>
-                <span class="fs-5 fw-bold text-white mt-2 text-truncate w-100" title="{{ service.hostname }}:{{ service.port }}">{{ service.hostname }}:{{ service.port }}</span>
-            </div>
+        <div class="card-enterprise text-center py-2 h-100 d-flex flex-column justify-content-center align-items-center">
+            <span class="form-label-enterprise mb-1" style="font-size:0.65rem;">Coordinates</span>
+            <span class="fs-6 fw-semibold text-white text-truncate w-100 px-2" title="{{ service.hostname }}:{{ service.port }}">{{ service.hostname }}:{{ service.port }}</span>
         </div>
     </div>
 
     <!-- Version Card -->
     <div class="col-6 col-md-6 col-lg-2">
-        <div class="card stat-card bg-navbar border border-dark-30 text-white shadow-sm h-100 text-center py-2">
-            <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                <span class="small text-light-50 text-uppercase tracking-wider">Version</span>
-                <span class="fs-4 fw-bold text-white mt-1" id="detail-version">{{ service.version }}</span>
-            </div>
+        <div class="card-enterprise text-center py-2 h-100 d-flex flex-column justify-content-center align-items-center">
+            <span class="form-label-enterprise mb-1" style="font-size:0.65rem;">Version</span>
+            <span class="fs-5 fw-bold text-white" id="detail-version">{{ service.version }}</span>
         </div>
     </div>
 
     <!-- Uptime Card -->
     <div class="col-6 col-md-6 col-lg-2">
-        <div class="card stat-card bg-navbar border border-dark-30 text-white shadow-sm h-100 text-center py-2">
-            <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                <span class="small text-light-50 text-uppercase tracking-wider">Uptime</span>
-                <span class="fs-5 fw-semibold text-success mt-2 text-truncate w-100" id="detail-uptime" title="{{ service.uptime_str }}">{{ service.uptime_str }}</span>
-            </div>
+        <div class="card-enterprise text-center py-2 h-100 d-flex flex-column justify-content-center align-items-center">
+            <span class="form-label-enterprise mb-1" style="font-size:0.65rem;">Uptime</span>
+            <span class="fs-6 fw-semibold text-success text-truncate w-100 px-2" id="detail-uptime" title="{{ service.uptime_str }}">{{ service.uptime_str }}</span>
         </div>
     </div>
 </div>
@@ -125,33 +115,39 @@
 <div class="row g-4 mb-4">
     <!-- Latency Timeline Graph -->
     <div class="col-12 col-lg-8">
-        <div class="card bg-navbar border border-dark-30 shadow-sm p-4">
-            <h5 class="card-title text-white mb-3 fw-bold">Latency Latency Trend (Last 100 Checks)</h5>
-            <div style="height: 250px;"><canvas id="chart-service-detail-latency"></canvas></div>
+        <div class="card-enterprise p-4">
+            <h5 class="section-title-sre">
+                <i data-lucide="trending-up"></i>
+                <span>Latency latency Trend (Last 100 Checks)</span>
+            </h5>
+            <div style="height: 230px;"><canvas id="chart-service-detail-latency"></canvas></div>
         </div>
     </div>
     
     <!-- Checklist Stats and Availability Details -->
     <div class="col-12 col-lg-4">
-        <div class="card bg-navbar border border-dark-30 shadow-sm h-100 p-4 d-flex flex-column justify-content-between">
+        <div class="card-enterprise p-4 h-100 d-flex flex-column justify-content-between">
             <div>
-                <h5 class="card-title text-white mb-3 fw-bold">Incident Log Telemetry</h5>
-                <ul class="list-group list-group-flush bg-transparent text-light-50" style="font-size:0.85rem;">
-                    <li class="list-group-item bg-transparent border-dark-30 px-0 d-flex justify-content-between text-light-50">
+                <h5 class="section-title-sre">
+                    <i data-lucide="shield-check"></i>
+                    <span>Incident log Telemetry</span>
+                </h5>
+                <ul class="list-group list-group-flush bg-transparent" style="font-size:0.85rem;">
+                    <li class="list-group-item bg-transparent border-dark-30 px-0 d-flex justify-content-between text-secondary" style="border-bottom-color: var(--border-color) !important;">
                         <span>Environment Tier:</span>
                         <strong class="text-white">{{ service.environment }}</strong>
                     </li>
-                    <li class="list-group-item bg-transparent border-dark-30 px-0 d-flex justify-content-between text-light-50">
+                    <li class="list-group-item bg-transparent border-dark-30 px-0 d-flex justify-content-between text-secondary" style="border-bottom-color: var(--border-color) !important;">
                         <span>Endpoint URL:</span>
                         <strong class="text-white text-truncate text-end w-75" title="{{ service.health_url }}">{{ service.health_url }}</strong>
                     </li>
-                    <li class="list-group-item bg-transparent border-dark-30 px-0 d-flex justify-content-between text-light-50">
+                    <li class="list-group-item bg-transparent border-dark-30 px-0 d-flex justify-content-between text-secondary" style="border-bottom-color: var(--border-color) !important;">
                         <span>Last Successful Check:</span>
                         <strong class="text-white" id="detail-last-success">
                             {{ service.last_success.strftime('%Y-%m-%d %H:%M:%S') if service.last_success else 'N/A' }}
                         </strong>
                     </li>
-                    <li class="list-group-item bg-transparent border-dark-30 px-0 d-flex justify-content-between text-light-50">
+                    <li class="list-group-item bg-transparent border-dark-30 px-0 d-flex justify-content-between text-secondary" style="border-bottom-color: var(--border-color) !important;">
                         <span>Last Failed Check:</span>
                         <strong class="text-danger" id="detail-last-failure">
                             {{ service.last_failure.strftime('%Y-%m-%d %H:%M:%S') if service.last_failure else 'N/A' }}
@@ -161,8 +157,8 @@
             </div>
             
             <div class="mt-4">
-                <span class="small text-light-50 text-uppercase tracking-wider mb-2 d-block">Incident Recovery Health Ratio</span>
-                <div class="progress bg-dark-20 progress-bar-height" style="height:15px;">
+                <span class="form-label-enterprise mb-2 d-block" style="font-size:0.68rem;">Incident Recovery Health Ratio</span>
+                <div class="progress" style="height:10px; background-color: rgba(255,255,255,0.05); border-radius:5px;">
                     <div class="progress-bar bg-success" role="progressbar" id="detail-progress-availability" style="width: {{ service.availability }}%"></div>
                 </div>
             </div>
@@ -173,19 +169,22 @@
 <!-- Last 100 Status Timeline Blocks -->
 <div class="row mb-4">
     <div class="col-12">
-        <div class="card bg-navbar border border-dark-30 shadow-sm p-4">
-            <h5 class="card-title text-white mb-3 fw-bold d-flex align-items-center justify-content-between">
-                <span>Check History Status Timeline</span>
-                <span class="small text-light-50" style="font-size:0.75rem;">Oldest &rarr; Newest</span>
+        <div class="card-enterprise p-4">
+            <h5 class="section-title-sre justify-content-between">
+                <span class="d-flex align-items-center gap-2">
+                    <i data-lucide="clock"></i>
+                    <span>Check History Status Timeline</span>
+                </span>
+                <span class="small text-muted font-normal" style="font-size:0.75rem; text-transform:none; letter-spacing:0;">Oldest &rarr; Newest</span>
             </h5>
             
             <!-- Timeline blocks grid layout -->
             <div class="d-flex flex-wrap gap-1.5 timeline-grid-scroll py-2 px-1" id="detail-timeline-blocks">
                 {% for status in service.history_statuses %}
-                    <span class="timeline-block timeline-block-{{ status | lower }}" title="Check Status: {{ status }}"></span>
+                    <span class="status-dot {{ status | lower }}" style="width:6px; height:14px; border-radius:1px;" title="Check Status: {{ status }}"></span>
                 {% endfor %}
                 {% if not service.history_statuses %}
-                    <div class="text-center w-100 text-light-50 py-3 small">No checks scheduled yet.</div>
+                    <div class="text-center w-100 text-secondary py-3 small">No checks scheduled yet.</div>
                 {% endif %}
             </div>
         </div>
@@ -193,37 +192,33 @@
 </div>
 
 <!-- Logs List for Specific Service -->
-<div class="row">
-    <div class="col-12">
-        <div class="card bg-navbar border border-dark-30 shadow-sm">
-            <div class="card-header border-bottom border-dark-30 bg-navbar py-3 px-4">
-                <h5 class="card-title text-white m-0 fw-bold">Recent Probe Audits (Last 50 Logs)</h5>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-dark table-hover table-striped align-middle mb-0" id="detail-logs-table">
-                        <thead>
-                            <tr class="table-header-style">
-                                <th class="ps-4">Timestamp</th>
-                                <th>Status</th>
-                                <th>Response Latency</th>
-                                <th>HTTP Status</th>
-                                <th class="pe-4">Remarks / Error Logs</th>
-                            </tr>
-                        </thead>
-                        <tbody id="detail-logs-tbody">
-                            <!-- Loaded dynamically or filled -->
-                            <tr>
-                                <td colspan="5" class="text-center py-4 text-light-50">
-                                    <div class="spinner-border spinner-border-sm text-primary me-2"></div>
-                                    Reading log records...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+<div class="table-responsive-container">
+    <div class="py-3 px-4 border-bottom" style="border-bottom-color: var(--border-color) !important;">
+        <h5 class="section-title-sre m-0">
+            <i data-lucide="list"></i>
+            <span>Recent Probe Audits (Last 50 Logs)</span>
+        </h5>
+    </div>
+    <div class="table-responsive">
+        <table class="table-enterprise table-logs align-middle" id="detail-logs-table">
+            <thead>
+                <tr>
+                    <th class="ps-4">Timestamp</th>
+                    <th>Status</th>
+                    <th>Response Latency</th>
+                    <th>HTTP Status</th>
+                    <th class="pe-4">Remarks / Error Logs</th>
+                </tr>
+            </thead>
+            <tbody id="detail-logs-tbody">
+                <tr>
+                    <td colspan="5" class="text-center py-4 text-secondary">
+                        <div class="spinner-border spinner-border-sm text-primary me-2"></div>
+                        Reading log records...
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
 
@@ -234,17 +229,17 @@
 <div class="row g-4">
     <!-- Log Filter Controls Column -->
     <div class="col-12">
-        <div class="card bg-navbar border border-dark-30 shadow-sm p-4">
-            <h5 class="card-title text-white mb-4 fw-bold d-flex align-items-center gap-2">
-                <i class="bi bi-funnel text-primary"></i>
+        <div class="card-enterprise p-4">
+            <h5 class="section-title-sre mb-4">
+                <i data-lucide="filter"></i>
                 <span>Query Filters</span>
             </h5>
             
             <form id="logs-query-form" class="row g-3 align-items-end">
                 <!-- Log Type Selection -->
                 <div class="col-12 col-md-3">
-                    <label for="log-type" class="form-label text-light-50 small fw-medium text-uppercase tracking-wider">Log Type</label>
-                    <select class="form-select bg-dark-20 border-dark-30 text-white pointer" id="log-type" required>
+                    <label for="log-type" class="form-label-enterprise">Log Type</label>
+                    <select class="form-select-enterprise pointer" id="log-type" required>
                         <option value="health">Health Probe Logs</option>
                         <option value="audit">Administrative Audit Logs</option>
                         <option value="application">Live Application Log Output</option>
@@ -253,8 +248,8 @@
                 
                 <!-- Service Target (Only for Health checks) -->
                 <div class="col-12 col-md-3" id="filter-service-container">
-                    <label for="log-service-id" class="form-label text-light-50 small fw-medium text-uppercase tracking-wider">Target Node</label>
-                    <select class="form-select bg-dark-20 border-dark-30 text-white pointer" id="log-service-id">
+                    <label for="log-service-id" class="form-label-enterprise">Target Node</label>
+                    <select class="form-select-enterprise pointer" id="log-service-id">
                         <option value="">All Services</option>
                         {% for s in services %}
                             <option value="{{ s.id }}">{{ s.name }}</option>
@@ -264,8 +259,8 @@
                 
                 <!-- Status Filter (Only for Health checks) -->
                 <div class="col-12 col-md-3" id="filter-status-container">
-                    <label for="log-status" class="form-label text-light-50 small fw-medium text-uppercase tracking-wider">Status Alert</label>
-                    <select class="form-select bg-dark-20 border-dark-30 text-white pointer" id="log-status">
+                    <label for="log-status" class="form-label-enterprise">Status Alert</label>
+                    <select class="form-select-enterprise pointer" id="log-status">
                         <option value="All">All Statuses</option>
                         <option value="Healthy">Healthy</option>
                         <option value="Warning">Warning</option>
@@ -275,9 +270,9 @@
                 </div>
                 
                 <!-- Submit Queries -->
-                <div class="col-12 col-md-3 ms-auto text-end">
-                    <button type="submit" class="btn btn-primary px-4 fw-semibold transition-all w-100 d-flex align-items-center justify-content-center gap-1.5">
-                        <i class="bi bi-search"></i>
+                <div class="col-12 col-md-3 text-end">
+                    <button type="submit" class="btn-primary-enterprise px-4 py-1.5 w-100 d-flex align-items-center justify-content-center gap-1.5">
+                        <i data-lucide="search" style="width: 14px; height: 14px;"></i>
                         <span>Query Ledger</span>
                     </button>
                 </div>
@@ -287,44 +282,44 @@
 
     <!-- Global Ledger Display Column -->
     <div class="col-12">
-        <div class="card bg-navbar border border-dark-30 shadow-sm" id="logs-ledger-card">
-            <div class="card-header border-bottom border-dark-30 bg-navbar py-3 px-4 d-flex align-items-center justify-content-between">
-                <h5 class="card-title text-white m-0 fw-bold" id="ledger-title">Health Check Logs Ledger</h5>
-                <span class="badge bg-secondary" id="ledger-count-badge">0 Rows</span>
+        <div class="card-enterprise p-0" id="logs-ledger-card" style="overflow: hidden;">
+            <div class="py-3 px-4 border-bottom bg-navbar d-flex align-items-center justify-content-between" style="border-bottom-color: var(--border-color) !important;">
+                <h5 class="section-title-sre m-0" id="ledger-title">Health Check Logs Ledger</h5>
+                <span class="badge" style="background-color: rgba(255,255,255,0.03); border: 1px solid var(--border-color); color: var(--text-secondary);" id="ledger-count-badge">0 Rows</span>
             </div>
             
-            <div class="card-body p-0" id="ledger-table-container">
-                <div class="table-responsive">
-                    <table class="table table-dark table-hover table-striped align-middle mb-0" id="logs-explorer-table">
-                        <thead id="logs-explorer-thead">
-                            <!-- Populated dynamically via js -->
-                        </thead>
-                        <tbody id="logs-explorer-tbody">
-                            <tr>
-                                <td class="text-center py-5 text-light-50">
-                                    Please run a query to fetch log history.
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+            <div class="table-responsive" id="ledger-table-container">
+                <table class="table-enterprise table-logs align-middle" id="logs-explorer-table">
+                    <thead id="logs-explorer-thead">
+                        <!-- Populated dynamically via js -->
+                    </thead>
+                    <tbody id="logs-explorer-tbody">
+                        <tr>
+                            <td class="text-center py-5 text-secondary">
+                                Please run a query to fetch log history.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
             <!-- Terminal output wrapper (Shown only when querying Application logs) -->
-            <div class="card-body p-0 d-none" id="ledger-terminal-container">
-                <div class="terminal-shell bg-app text-light-50 font-monospace p-4" style="height: 480px; overflow-y: auto;" id="terminal-screen">
+            <div class="d-none" id="ledger-terminal-container">
+                <div class="terminal-shell bg-app text-secondary font-monospace p-4" style="height: 480px; overflow-y: auto; font-size: 0.8rem; border-radius: 0 0 6px 6px;" id="terminal-screen">
                     <!-- Logs lines loaded dynamically -->
                 </div>
             </div>
             
             <!-- Pagination footer controls -->
-            <div class="card-footer border-top border-dark-30 bg-navbar py-3 px-4 d-flex align-items-center justify-content-between" id="ledger-pagination-container">
-                <button class="btn btn-outline-secondary btn-sm px-3 transition-all" id="btn-prev-page" disabled>
-                    <i class="bi bi-chevron-left me-1"></i>Previous Page
+            <div class="py-3 px-4 d-flex align-items-center justify-content-between border-top bg-navbar" id="ledger-pagination-container" style="border-top-color: var(--border-color) !important;">
+                <button class="btn-primary-enterprise py-1.5 px-3 d-flex align-items-center gap-1.5" style="background-color: var(--bg-surface); border-color: var(--border-color); color: var(--text-secondary);" id="btn-prev-page" disabled>
+                    <i data-lucide="chevron-left" style="width: 14px; height: 14px;"></i>
+                    <span>Previous</span>
                 </button>
-                <span class="text-light-50 small fw-medium" id="page-indicator">Page 1</span>
-                <button class="btn btn-outline-secondary btn-sm px-3 transition-all" id="btn-next-page">
-                    Next Page<i class="bi bi-chevron-right ms-1"></i>
+                <span class="text-secondary small fw-medium" id="page-indicator">Page 1</span>
+                <button class="btn-primary-enterprise py-1.5 px-3 d-flex align-items-center gap-1.5" style="background-color: var(--bg-surface); border-color: var(--border-color); color: var(--text-secondary);" id="btn-next-page">
+                    <span>Next</span>
+                    <i data-lucide="chevron-right" style="width: 14px; height: 14px;"></i>
                 </button>
             </div>
         </div>
@@ -360,11 +355,11 @@
                 datasets: [{
                     label: 'Probe Latency (ms)',
                     data: rawLatencies,
-                    borderColor: '#0d6efd',
-                    backgroundColor: 'rgba(13, 110, 253, 0.08)',
-                    borderWidth: 2,
+                    borderColor: '#3B82F6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.04)',
+                    borderWidth: 1.8,
                     fill: true,
-                    tension: 0.3,
+                    tension: 0.2,
                     pointRadius: 2,
                     pointHoverRadius: 5
                 }]
@@ -378,8 +373,8 @@
                 scales: {
                     x: { display: false },
                     y: {
-                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                        ticks: { color: '#8c98a5', font: { size: 10 } }
+                        grid: { color: 'rgba(255, 255, 255, 0.04)' },
+                        ticks: { color: '#64748B', font: { size: 10 } }
                     }
                 }
             }
@@ -411,10 +406,10 @@
                 showNotification("Manual check executed successfully.", "success");
                 
                 // Dynamically reload details parameters
-                document.getElementById("detail-status-badge").className = `badge px-3 py-2 fs-6 status-badge-${data.status.toLowerCase()}`;
-                document.getElementById("detail-status-badge").textContent = data.status;
+                document.getElementById("detail-status-badge").className = `badge-status ${data.status.toLowerCase()}`;
+                document.getElementById("detail-status-badge").innerHTML = `<span class="status-dot ${data.status.toLowerCase()}"></span> ${data.status}`;
                 document.getElementById("detail-availability-percent").textContent = `${data.availability}%`;
-                document.getElementById("detail-latency").innerHTML = `${data.response_time} <span class="small" style="font-size:0.6em;">ms</span>`;
+                document.getElementById("detail-latency").innerHTML = `${data.response_time} <span class="small font-normal" style="font-size:0.65rem; margin-left: 2px;">ms</span>`;
                 document.getElementById("detail-version").textContent = data.version;
                 document.getElementById("detail-uptime").textContent = data.uptime_str;
                 document.getElementById("detail-progress-availability").style.width = `${data.availability}%`;
@@ -433,7 +428,10 @@
                 blockContainer.innerHTML = "";
                 data.history_statuses.forEach(status => {
                     const block = document.createElement("span");
-                    block.className = `timeline-block timeline-block-${status.toLowerCase()}`;
+                    block.className = `status-dot ${status.toLowerCase()}`;
+                    block.style.width = "6px";
+                    block.style.height = "14px";
+                    block.style.borderRadius = "1px";
                     block.title = `Check Status: ${status}`;
                     blockContainer.appendChild(block);
                 });
@@ -492,7 +490,7 @@
                 tbody.innerHTML = "";
                 
                 if (logs.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="5" class="text-center text-light-50 py-4">No records found.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-secondary">No records found.</td></tr>`;
                     return;
                 }
                 
@@ -500,16 +498,21 @@
                     const row = document.createElement("tr");
                     const date = new Date(log.timestamp);
                     const timestampStr = date.toLocaleString();
-                    const statusClass = `badge status-badge-${log.status.toLowerCase()}`;
+                    const statusClass = `badge-status ${log.status.toLowerCase()}`;
                     const httpCode = log.http_status ? log.http_status : '-';
                     const remarksText = log.remarks ? log.remarks : '-';
                     
                     row.innerHTML = `
-                        <td class="ps-4 fw-medium text-white-50">${timestampStr}</td>
-                        <td><span class="${statusClass}">${log.status}</span></td>
-                        <td class="text-info">${log.response_time} ms</td>
-                        <td class="fw-bold">${httpCode}</td>
-                        <td class="pe-4 text-light-50 font-monospace small" style="max-width:300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${remarksText}">${remarksText}</td>
+                        <td class="ps-4 font-monospace text-muted">${timestampStr}</td>
+                        <td>
+                            <span class="${statusClass}">
+                                <span class="status-dot ${log.status.toLowerCase()}"></span>
+                                ${log.status}
+                            </span>
+                        </td>
+                        <td class="text-info font-monospace">${log.response_time}ms</td>
+                        <td class="font-monospace text-secondary fw-bold">${httpCode}</td>
+                        <td class="pe-4 text-secondary font-monospace" style="max-width:300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${remarksText}">${remarksText}</td>
                     `;
                     tbody.appendChild(row);
                 });
@@ -519,6 +522,7 @@
         }
         
         loadLogs();
+        lucide.createIcons();
     });
 </script>
 {% else %}

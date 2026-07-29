@@ -3,7 +3,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     // Highlight Sidebar active selection
     const navLogs = document.getElementById("nav-logs");
-    if (navLogs) navLogs.classList.add("active", "bg-primary");
+    if (navLogs) navLogs.classList.add("active");
 
     const queryForm = document.getElementById("logs-query-form");
     const logTypeSelect = document.getElementById("log-type");
@@ -18,8 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
     const ledgerTitle = document.getElementById("ledger-title");
     const ledgerBadge = document.getElementById("ledger-count-badge");
-
-    // Pagination elements
+ 
     const paginationContainer = document.getElementById("ledger-pagination-container");
     const btnPrevPage = document.getElementById("btn-prev-page");
     const btnNextPage = document.getElementById("btn-next-page");
@@ -38,11 +37,9 @@ document.addEventListener("DOMContentLoaded", () => {
             serviceFilterContainer.classList.add("d-none");
             statusFilterContainer.classList.add("d-none");
         }
-        // Reset page on type change
         currentPage = 1;
     });
 
-    // Reset page when search parameters are edited
     queryForm.addEventListener("change", () => {
         currentPage = 1;
     });
@@ -65,8 +62,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
             // Loading State
-            tableBody.innerHTML = `<tr><td class="text-center py-5 text-light-50"><div class="spinner-border spinner-border-sm text-primary me-2"></div>Querying logs...</td></tr>`;
-            terminalScreen.innerHTML = `<div class="text-light-50 text-center py-5">Loading application process logs stream...</div>`;
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="text-center py-5 text-muted">
+                        <div class="spinner-border spinner-border-sm text-primary me-2"></div>
+                        Querying SRE log datasets...
+                    </td>
+                </tr>
+            `;
+            terminalScreen.innerHTML = `<div class="text-muted text-center py-5">Loading process stdout trace stream...</div>`;
             
             const response = await fetch(url, { headers });
             const data = await response.json();
@@ -81,10 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
             } else {
                 paginationContainer.classList.remove("d-none");
                 pageIndicator.textContent = `Page ${currentPage}`;
-                
-                // Update navigation button states
                 btnPrevPage.disabled = currentPage === 1;
-                // If returned rows are less than page limit, we are on the last page
                 btnNextPage.disabled = data.length < pageLimit;
             }
 
@@ -92,23 +93,34 @@ document.addEventListener("DOMContentLoaded", () => {
             if (type === "health") {
                 tableContainer.classList.remove("d-none");
                 terminalContainer.classList.add("d-none");
-                ledgerTitle.textContent = "Health Checks Probe Logs";
+                ledgerTitle.textContent = "Health Probes Log ledger";
                 ledgerBadge.textContent = `${data.length} Records`;
                 
                 tableHead.innerHTML = `
-                    <tr class="table-header-style">
+                    <tr>
                         <th class="ps-4">Timestamp</th>
-                        <th>Service Node</th>
-                        <th>Status</th>
-                        <th>Latency Response</th>
+                        <th>Service Target</th>
+                        <th>Severity</th>
+                        <th>Latency</th>
                         <th>HTTP Status</th>
-                        <th class="pe-4">Remarks / Exception</th>
+                        <th class="pe-4">Remarks / Exceptions</th>
                     </tr>
                 `;
                 
                 tableBody.innerHTML = "";
                 if (data.length === 0) {
-                    tableBody.innerHTML = `<tr><td colspan="6" class="text-center text-light-50 py-4">No health logs found matching these filters.</td></tr>`;
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="text-center py-5">
+                                <div class="empty-state border-0 bg-transparent">
+                                    <i data-lucide="terminal" class="empty-state-icon"></i>
+                                    <h6 class="empty-state-title">No health logs found</h6>
+                                    <p class="empty-state-desc">Try adjustment filters or refresh target nodes.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    lucide.createIcons();
                     return;
                 }
                 
@@ -116,17 +128,24 @@ document.addEventListener("DOMContentLoaded", () => {
                     const row = document.createElement("tr");
                     const date = new Date(log.timestamp);
                     const timeStr = date.toLocaleString();
-                    const statusClass = `badge status-badge-${log.status.toLowerCase()}`;
+                    
+                    let sevClass = "info";
+                    if (log.status.toLowerCase() === "healthy") sevClass = "success";
+                    if (log.status.toLowerCase() === "warning") sevClass = "warning";
+                    if (log.status.toLowerCase() === "critical") sevClass = "error";
+                    if (log.status.toLowerCase() === "offline") sevClass = "error";
+
+                    const badgeHtml = `<span class="badge-severity ${sevClass}">${log.status}</span>`;
                     const httpCode = log.http_status ? log.http_status : '-';
                     const remarksText = log.remarks ? log.remarks : '-';
                     
                     row.innerHTML = `
-                        <td class="ps-4 fw-medium text-white-50">${timeStr}</td>
-                        <td class="fw-bold">${log.service_name}</td>
-                        <td><span class="${statusClass}">${log.status}</span></td>
-                        <td class="text-info font-monospace">${log.response_time} ms</td>
-                        <td class="fw-bold">${httpCode}</td>
-                        <td class="pe-4 text-light-50 font-monospace small" style="max-width:350px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${remarksText}">${remarksText}</td>
+                        <td class="ps-4 font-monospace text-muted">${timeStr}</td>
+                        <td class="fw-semibold text-white">${log.service_name}</td>
+                        <td>${badgeHtml}</td>
+                        <td class="text-info font-monospace">${log.response_time}ms</td>
+                        <td class="font-monospace text-secondary fw-bold">${httpCode}</td>
+                        <td class="pe-4 text-secondary font-monospace" style="max-width:320px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${remarksText}">${remarksText}</td>
                     `;
                     tableBody.appendChild(row);
                 });
@@ -136,11 +155,11 @@ document.addEventListener("DOMContentLoaded", () => {
             else if (type === "audit") {
                 tableContainer.classList.remove("d-none");
                 terminalContainer.classList.add("d-none");
-                ledgerTitle.textContent = "SRE Administrative Audit Trail";
+                ledgerTitle.textContent = "Administrative Audit Trail Log";
                 ledgerBadge.textContent = `${data.length} Records`;
                 
                 tableHead.innerHTML = `
-                    <tr class="table-header-style">
+                    <tr>
                         <th class="ps-4">Timestamp</th>
                         <th>Operator Identity</th>
                         <th>Action</th>
@@ -151,7 +170,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 
                 tableBody.innerHTML = "";
                 if (data.length === 0) {
-                    tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-light-50 py-4">No audit logs found.</td></tr>`;
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="text-center py-5">
+                                <div class="empty-state border-0 bg-transparent">
+                                    <i data-lucide="user-x" class="empty-state-icon"></i>
+                                    <h6 class="empty-state-title">No audit records</h6>
+                                    <p class="empty-state-desc">Operator activities will populate here.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    lucide.createIcons();
                     return;
                 }
                 
@@ -162,28 +192,31 @@ document.addEventListener("DOMContentLoaded", () => {
                     const ip = log.ip_address ? log.ip_address : '-';
                     
                     row.innerHTML = `
-                        <td class="ps-4 fw-medium text-white-50">${timeStr}</td>
-                        <td class="text-primary fw-semibold"><i class="bi bi-person-fill me-1"></i>${log.user_email}</td>
-                        <td class="fw-bold text-white">${log.action}</td>
-                        <td class="text-light-50 small">${log.details || '-'}</td>
-                        <td class="pe-4 font-monospace small">${ip}</td>
+                        <td class="ps-4 font-monospace text-muted">${timeStr}</td>
+                        <td class="text-primary fw-semibold d-flex align-items-center gap-1.5">
+                            <i data-lucide="user" style="width: 14px; height: 14px;"></i>
+                            ${log.user_email}
+                        </td>
+                        <td class="fw-semibold text-white">${log.action}</td>
+                        <td class="text-secondary" style="font-size:0.82rem;">${log.details || '-'}</td>
+                        <td class="pe-4 font-monospace text-muted">${ip}</td>
                     `;
                     tableBody.appendChild(row);
                 });
             }
             
-            // 3. Live Application logging (stdout application.log)
+            // 3. Live stdout log output file
             else {
                 tableContainer.classList.add("d-none");
                 terminalContainer.classList.remove("d-none");
-                ledgerTitle.textContent = "Live Python Process Logs (application.log)";
+                ledgerTitle.textContent = "Process Stdout Stream (application.log)";
                 
                 const lines = data.logs || [];
                 ledgerBadge.textContent = `${lines.length} Lines`;
                 
                 terminalScreen.innerHTML = "";
                 if (lines.length === 0) {
-                    terminalScreen.innerHTML = `<div class="text-light-50">Empty log output. Trigger checks or perform operations.</div>`;
+                    terminalScreen.innerHTML = `<div class="text-muted text-center py-5">Empty log output feed.</div>`;
                     return;
                 }
                 
@@ -192,34 +225,35 @@ document.addEventListener("DOMContentLoaded", () => {
                     div.className = "terminal-line";
                     
                     if (line.includes("[ERROR]") || line.includes("[CRITICAL]")) {
-                        div.className += " terminal-error";
+                        div.className += " text-danger fw-bold";
                     } else if (line.includes("[WARNING]")) {
-                        div.className += " terminal-warn";
+                        div.className += " text-warning";
                     } else {
-                        div.className += " terminal-info";
+                        div.className += " text-secondary";
                     }
                     
                     div.textContent = line;
                     terminalScreen.appendChild(div);
                 });
                 
-                // Automatically scroll terminal to the bottom
                 terminalScreen.scrollTop = terminalScreen.scrollHeight;
             }
 
+            lucide.createIcons();
+
         } catch (ex) {
             showNotification(ex.message, "danger");
-            tableBody.innerHTML = `<tr><td class="text-center text-danger py-4"><i class="bi bi-exclamation-octagon me-2"></i>Error querying logs: ${ex.message}</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="6" class="text-center text-danger py-4">Error loading logs: ${ex.message}</td></tr>`;
         }
     }
 
     queryForm.addEventListener("submit", (e) => {
         e.preventDefault();
-        currentPage = 1; // Reset to page 1 on search submit
+        currentPage = 1;
         executeQuery();
     });
     
-    // Pagination button clicks
+    // Pagination clicks
     btnPrevPage.addEventListener("click", () => {
         if (currentPage > 1) {
             currentPage--;
@@ -232,6 +266,6 @@ document.addEventListener("DOMContentLoaded", () => {
         executeQuery();
     });
 
-    // Auto-run initial query
+    // Boot
     executeQuery();
 });

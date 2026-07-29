@@ -8,109 +8,122 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Custom Style Sheet -->
     <link rel="stylesheet" href="/static/css/style.css">
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     {% block head %}{% endblock %}
 </head>
 <body>
-    <div class="d-flex min-vh-100">
-        <!-- Grafana-style Sidebar -->
+    <div class="app-container">
+        <!-- Collapsible Enterprise Sidebar -->
         {% if user %}
-        <nav class="sidebar d-flex flex-column flex-shrink-0 p-3 bg-navbar border-end border-dark-30" style="width: 250px;">
-            <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-primary text-decoration-none gap-2">
-                <i class="bi bi-activity fs-3 text-glow animate-pulse"></i>
-                <span class="fs-4 fw-bold text-white tracking-wider">SRE PORTAL</span>
-            </a>
-            <hr class="border-dark-30 my-3">
-            <ul class="nav nav-pills flex-column mb-auto gap-1">
-                <li class="nav-item">
-                    <a href="/" class="nav-link text-white d-flex align-items-center gap-2.5 transition-all" id="nav-dashboard">
-                        <i class="bi bi-speedometer2"></i>
+        <aside class="sidebar" id="app-sidebar">
+            <div class="sidebar-brand">
+                <i data-lucide="activity" class="text-primary animate-pulse" style="width: 24px; height: 24px; stroke-width: 2.5;"></i>
+                <span class="sidebar-brand-name">SRE MONITOR</span>
+                <button class="btn btn-icon d-lg-none ms-auto" id="sidebar-close-btn" style="border: none; background: transparent;">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="/" class="nav-link" id="nav-dashboard">
+                        <i data-lucide="layout-dashboard"></i>
                         <span>Live Dashboard</span>
                     </a>
                 </li>
                 <li>
-                    <a href="/logs/view" class="nav-link text-white d-flex align-items-center gap-2.5 transition-all" id="nav-logs">
-                        <i class="bi bi-terminal"></i>
+                    <a href="/logs/view" class="nav-link" id="nav-logs">
+                        <i data-lucide="terminal"></i>
                         <span>Logs Explorer</span>
                     </a>
                 </li>
                 {% if user.role == "Admin" %}
                 <li>
-                    <a href="/services/new" class="nav-link text-white d-flex align-items-center gap-2.5 transition-all" id="nav-add-service">
-                        <i class="bi bi-plus-circle"></i>
+                    <a href="/services/new" class="nav-link" id="nav-add-service">
+                        <i data-lucide="plus-circle"></i>
                         <span>Add Target Node</span>
                     </a>
                 </li>
                 {% endif %}
             </ul>
-            <hr class="border-dark-30 my-3">
-            <!-- User Status Section -->
-            <div class="dropdown">
-                <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle gap-2" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
-                    <div class="user-avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 32px; height: 32px; font-size: 0.85rem;">
-                        {{ user.first_name[0] | upper }}{{ user.last_name[0] | upper }}
-                    </div>
-                    <div class="d-flex flex-column text-start" style="font-size: 0.8rem;">
-                        <span class="fw-semibold">{{ user.first_name }} {{ user.last_name }}</span>
-                        <span class="text-light-50 small">{{ user.role }}</span>
-                    </div>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-dark text-small shadow border border-dark-30" aria-labelledby="dropdownUser">
-                    <li><span class="dropdown-item-text text-light-50 small">{{ user.email }}</span></li>
-                    <li><hr class="dropdown-divider border-dark-30"></li>
-                    <li><a class="dropdown-item text-danger" href="/logout"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
-                </ul>
+            
+            <div class="sidebar-footer">
+                <div class="dropdown">
+                    <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle gap-2.5" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="user-avatar text-white">
+                            {{ user.first_name[0] | upper }}{{ user.last_name[0] | upper }}
+                        </div>
+                        <div class="d-flex flex-column text-start" style="font-size: 0.8rem; min-width: 0;">
+                            <span class="fw-semibold text-truncate" style="max-width: 120px;">{{ user.first_name }} {{ user.last_name }}</span>
+                            <span class="text-muted text-truncate" style="font-size: 0.72rem;">{{ user.role }}</span>
+                        </div>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser" style="background-color: var(--bg-surface); border: 1px solid var(--border-color);">
+                        <li><span class="dropdown-item-text text-muted small">{{ user.email }}</span></li>
+                        <li><hr class="dropdown-divider border-dark-30" style="border-top-color: var(--border-color);"></li>
+                        <li><a class="dropdown-item text-danger" href="/logout"><i class="me-2" data-lucide="log-out" style="width: 14px; height: 14px;"></i>Logout</a></li>
+                    </ul>
+                </div>
             </div>
-        </nav>
+        </aside>
         {% endif %}
 
-        <!-- Main Content Area -->
-        <main class="flex-grow-1 d-flex flex-column min-vh-100 overflow-hidden bg-app">
+        <!-- Content Area -->
+        <div class="content-wrapper">
             {% if user %}
-            <!-- Top Navbar for Auto refresh and header information -->
-            <header class="navbar navbar-expand-lg border-bottom border-dark-30 py-2.5 px-4 bg-navbar shadow-sm">
-                <div class="container-fluid p-0">
-                    <span class="navbar-text fw-medium text-white fs-5" id="page-header-title">
+            <!-- Topbar Control Center -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="btn btn-icon d-lg-none" id="sidebar-toggle-btn" title="Toggle Sidebar">
+                        <i data-lucide="menu"></i>
+                    </button>
+                    <span class="header-title" id="page-header-title">
                         {% block header_title %}Monitoring Dashboard{% endblock %}
                     </span>
-                    <div class="d-flex align-items-center gap-3 ms-auto">
-                        <!-- Auto Sync Panel -->
-                        <div class="d-flex align-items-center gap-2 bg-dark-20 px-3 py-1 rounded-pill border border-dark-30">
-                            <span id="refresh-pulse" class="pulse-indicator pulse-green"></span>
-                            <span id="refresh-text" class="small text-light-50 fw-medium">Syncing live (15s)...</span>
-                            <div class="form-check form-switch m-0 ms-1">
-                                <input class="form-check-input pointer" type="checkbox" id="auto-refresh-toggle" checked>
-                            </div>
-                        </div>
-
-                        <!-- Theme Toggle -->
-                        <button class="btn btn-icon transition-all" id="theme-toggle-btn" title="Toggle Theme">
-                            <i class="bi bi-sun-fill" id="theme-icon-light"></i>
-                            <i class="bi bi-moon-fill d-none" id="theme-icon-dark"></i>
-                        </button>
+                </div>
+                
+                <div class="topbar-right">
+                    <!-- Live Time (UTC) -->
+                    <div class="d-none d-md-flex align-items-center gap-1.5 text-muted small" style="font-family: monospace;">
+                        <i data-lucide="clock" style="width: 14px; height: 14px;"></i>
+                        <span id="live-utc-clock">UTC 00:00:00</span>
                     </div>
+
+                    <!-- Sync Status -->
+                    <div class="d-flex align-items-center gap-2 px-2.5 py-1 rounded-pill" style="background-color: rgba(255,255,255,0.03); border: 1px solid var(--border-color);">
+                        <span id="refresh-pulse" class="status-dot healthy animate-pulse" style="width: 6px; height: 6px;"></span>
+                        <span id="refresh-text" class="text-muted fw-medium" style="font-size: 0.75rem;">SYNC: ACTIVE</span>
+                        <div class="form-check form-switch m-0 ms-1 p-0 d-flex align-items-center" style="min-height: auto;">
+                            <input class="form-check-input pointer" type="checkbox" id="auto-refresh-toggle" checked style="margin-left: 0; width: 1.8em; height: 0.9em; cursor: pointer;">
+                        </div>
+                    </div>
+
+                    <!-- Theme Toggle -->
+                    <button class="btn btn-icon" id="theme-toggle-btn" title="Toggle Theme">
+                        <i data-lucide="sun" id="theme-icon-light"></i>
+                        <i data-lucide="moon" id="theme-icon-dark" class="d-none"></i>
+                    </button>
                 </div>
             </header>
             {% endif %}
 
-            <div class="flex-grow-1 p-4 overflow-y-auto" style="height: calc(100vh - 56px);">
+            <!-- Main Scroll Container -->
+            <main class="main-content">
                 {% block content %}{% endblock %}
-            </div>
-        </main>
+            </main>
+        </div>
     </div>
 
-    <!-- Floating Toast Container -->
+    <!-- Toast Notification Container -->
     <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
-        <div id="status-toast" class="toast align-items-center border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="4000">
+        <div id="status-toast" class="toast align-items-center border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="4000" style="background-color: var(--bg-surface); border: 1px solid var(--border-color) !important;">
             <div class="d-flex">
                 <div class="toast-body d-flex align-items-center gap-2">
-                    <i id="toast-icon" class="bi fs-5"></i>
-                    <span id="toast-message" class="fw-medium"></span>
+                    <i id="toast-icon" style="width: 18px; height: 18px;"></i>
+                    <span id="toast-message" class="fw-medium text-white" style="font-size: 0.85rem;"></span>
                 </div>
                 <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
@@ -120,7 +133,7 @@
     <!-- Bootstrap Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Global Theme Management
+        // Theme & Sidebar Controller
         function initTheme() {
             const savedTheme = localStorage.getItem("theme") || "dark";
             document.documentElement.setAttribute("data-bs-theme", savedTheme);
@@ -143,12 +156,42 @@
             const moonIcon = document.getElementById("theme-icon-dark");
             if (sunIcon && moonIcon) {
                 if (theme === "dark") {
-                    sunIcon.classList.remove("d-none");
-                    moonIcon.classList.add("d-none");
+                    sunIcon.style.display = "block";
+                    moonIcon.style.display = "none";
                 } else {
-                    sunIcon.classList.add("d-none");
-                    moonIcon.classList.remove("d-none");
+                    sunIcon.style.display = "none";
+                    moonIcon.style.display = "block";
                 }
+            }
+        }
+
+        // Live UTC Clock for Correlation
+        function initClock() {
+            const clockEl = document.getElementById("live-utc-clock");
+            if (!clockEl) return;
+            
+            const updateTime = () => {
+                const now = new Date();
+                const pad = (n) => String(n).padStart(2, '0');
+                const utcStr = `UTC ${pad(now.getUTCHours())}:${pad(now.getUTCMinutes())}:${pad(now.getUTCSeconds())}`;
+                clockEl.textContent = utcStr;
+            };
+            
+            updateTime();
+            setInterval(updateTime, 1000);
+        }
+
+        // Sidebar responsive handlers
+        function initSidebar() {
+            const toggleBtn = document.getElementById("sidebar-toggle-btn");
+            const closeBtn = document.getElementById("sidebar-close-btn");
+            const sidebar = document.getElementById("app-sidebar");
+            
+            if (toggleBtn && sidebar) {
+                toggleBtn.addEventListener("click", () => sidebar.classList.add("open"));
+            }
+            if (closeBtn && sidebar) {
+                closeBtn.addEventListener("click", () => sidebar.classList.remove("open"));
             }
         }
         
@@ -160,26 +203,35 @@
             const icon = document.getElementById("toast-icon");
             const msgSpan = document.getElementById("toast-message");
             
-            toastEl.classList.remove("toast-success", "toast-danger", "toast-info");
+            toastEl.classList.remove("border-success", "border-danger", "border-info");
             
             if (type === "success") {
-                toastEl.classList.add("toast-success");
-                icon.className = "bi bi-check-circle-fill me-1 text-white";
+                toastEl.classList.add("border-success");
+                icon.setAttribute("data-lucide", "check-circle-2");
+                icon.style.color = "var(--success)";
             } else if (type === "error" || type === "danger") {
-                toastEl.classList.add("toast-danger");
-                icon.className = "bi bi-exclamation-triangle-fill me-1 text-white";
+                toastEl.classList.add("border-danger");
+                icon.setAttribute("data-lucide", "alert-triangle");
+                icon.style.color = "var(--danger)";
             } else {
-                toastEl.classList.add("toast-info");
-                icon.className = "bi bi-info-circle-fill me-1 text-white";
+                toastEl.classList.add("border-info");
+                icon.setAttribute("data-lucide", "info");
+                icon.style.color = "var(--info)";
             }
             
             msgSpan.textContent = message;
+            lucide.createIcons();
             
             const toast = bootstrap.Toast.getOrCreateInstance(toastEl);
             toast.show();
         }
         
-        document.addEventListener("DOMContentLoaded", initTheme);
+        document.addEventListener("DOMContentLoaded", () => {
+            initTheme();
+            initClock();
+            initSidebar();
+            lucide.createIcons();
+        });
     </script>
     {% block scripts %}{% endblock %}
 </body>

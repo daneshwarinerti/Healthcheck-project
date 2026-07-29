@@ -1,0 +1,61 @@
+/* Enterprise Forms Stylesheet */
+.form-group-enterprise {
+    margin-bottom: var(--space-md);
+}
+
+.form-label-enterprise {
+    display: block;
+    color: var(--text-secondary);
+    font-size: 0.72rem;
+    font-weight: var(--font-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: var(--space-xs);
+}
+
+.form-control-enterprise, .form-select-enterprise {
+    width: 100%;
+    background-color: var(--bg-input) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--radius-md) !important;
+    padding: 8px var(--space-md);
+    color: var(--text-primary) !important;
+    font-size: 0.88rem;
+    outline: none;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.form-control-enterprise:focus, .form-select-enterprise:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 2px var(--primary-glow) !important;
+}
+
+.form-select-enterprise {
+    cursor: pointer;
+}
+
+.form-control-enterprise::placeholder {
+    color: var(--text-muted);
+    opacity: 0.7;
+}
+
+/* Button variants */
+.btn-primary-enterprise {
+    background-color: var(--primary);
+    border: 1px solid var(--primary);
+    color: #ffffff;
+    border-radius: var(--radius-md);
+    padding: var(--space-xs) var(--space-md);
+    font-weight: var(--font-semibold);
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+.btn-primary-enterprise:hover {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+}
+.btn-primary-enterprise:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

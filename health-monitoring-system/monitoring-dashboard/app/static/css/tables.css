@@ -1,0 +1,66 @@
+/* Enterprise Tables Stylesheet */
+.table-responsive-container {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    margin-bottom: var(--space-lg);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.table-enterprise {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+}
+
+.table-enterprise th {
+    background-color: rgba(0, 0, 0, 0.15);
+    color: var(--text-secondary);
+    font-size: 0.72rem;
+    font-weight: var(--font-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    padding: 10px var(--space-md);
+    border-bottom: 1px solid var(--border-color);
+    text-align: left;
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.table-enterprise td {
+    padding: 8px var(--space-md);
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.table-enterprise tr:last-child td {
+    border-bottom: none;
+}
+
+.table-enterprise tbody tr {
+    transition: background-color var(--transition-fast);
+}
+
+.table-enterprise tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.015);
+    cursor: pointer;
+}
+
+/* Specific alignments and custom fields */
+.table-enterprise td.mono, .table-enterprise th.mono {
+    font-family: 'SFMono-Regular', Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 0.8rem;
+}
+
+.table-enterprise .action-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: flex-end;
+}

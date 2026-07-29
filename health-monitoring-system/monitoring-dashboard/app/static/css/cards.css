@@ -1,0 +1,66 @@
+/* Enterprise Card Stylesheet */
+.card-enterprise {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--space-md);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.card-enterprise:hover {
+    border-color: var(--border-hover);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+}
+
+/* KPI Metric Cards */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+}
+
+.kpi-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 100px;
+}
+
+.kpi-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--text-secondary);
+    font-size: 0.72rem;
+    font-weight: var(--font-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.kpi-value {
+    font-size: 1.65rem;
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    margin-top: var(--space-xs);
+    margin-bottom: 2px;
+}
+
+.kpi-subtext {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Color overrides for metric trends */
+.text-trend-up {
+    color: var(--success);
+}
+
+.text-trend-down {
+    color: var(--danger);
+}

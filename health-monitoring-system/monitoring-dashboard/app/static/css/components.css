@@ -1,0 +1,192 @@
+/* Shared UI Components */
+
+/* Status Dots and Indicators */
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    vertical-align: middle;
+}
+.status-dot.healthy {
+    background-color: var(--success);
+    box-shadow: 0 0 8px var(--success);
+}
+.status-dot.warning {
+    background-color: var(--warning);
+    box-shadow: 0 0 8px var(--warning);
+}
+.status-dot.critical {
+    background-color: var(--danger);
+    box-shadow: 0 0 8px var(--danger);
+}
+.status-dot.offline {
+    background-color: var(--offline);
+}
+
+/* Status Badges */
+.badge-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 0.72rem;
+    font-weight: var(--font-semibold);
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+.badge-status.healthy {
+    background-color: rgba(34, 197, 94, 0.1);
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.15);
+}
+.badge-status.warning {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.15);
+}
+.badge-status.critical {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.15);
+}
+.badge-status.offline {
+    background-color: rgba(100, 116, 139, 0.1);
+    color: #94a3b8;
+    border: 1px solid rgba(100, 116, 139, 0.15);
+}
+
+/* Icon Buttons */
+.btn-icon {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-surface);
+    color: var(--text-secondary);
+    outline: none !important;
+    transition: all var(--transition-fast);
+    cursor: pointer;
+}
+.btn-icon:hover {
+    color: var(--text-primary);
+    border-color: var(--border-hover);
+    background-color: rgba(255,255,255,0.03);
+}
+.btn-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Skeleton Loaders */
+@keyframes skeleton-pulse {
+    0% { opacity: 0.6; }
+    100% { opacity: 0.35; }
+}
+.skeleton-box {
+    display: inline-block;
+    height: 1rem;
+    position: relative;
+    overflow: hidden;
+    background-color: rgba(255, 255, 255, 0.06);
+    border-radius: var(--radius-sm);
+    animation: skeleton-pulse 0.8s ease-in-out infinite alternate;
+}
+
+/* Empty States */
+.empty-state {
+    padding: var(--space-xl) var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+}
+.empty-state-icon {
+    width: 48px;
+    height: 48px;
+    color: var(--text-muted);
+    margin-bottom: var(--space-md);
+    stroke-width: 1.5;
+}
+.empty-state-title {
+    font-size: 1rem;
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    margin-bottom: var(--space-xs);
+}
+.empty-state-desc {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    max-width: 320px;
+    margin: 0;
+}
+
+/* User Avatar Bubble */
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: var(--primary);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: var(--font-semibold);
+}
+
+/* Slide-Over Action Sheet / Detail Sidebar Drawer */
+.detail-drawer {
+    position: fixed;
+    top: 0;
+    right: -450px;
+    width: 450px;
+    height: 100vh;
+    background-color: var(--bg-surface);
+    border-left: 1px solid var(--border-color);
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.35);
+    z-index: 1050;
+    display: flex;
+    flex-direction: column;
+    transition: right var(--transition-fast);
+}
+.detail-drawer.open {
+    right: 0;
+}
+.detail-drawer-header {
+    padding: var(--space-md) var(--space-lg);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.detail-drawer-body {
+    flex-grow: 1;
+    padding: var(--space-lg);
+    overflow-y: auto;
+}
+.detail-drawer-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1040;
+    display: none;
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+.detail-drawer-backdrop.show {
+    display: block;
+    opacity: 1;
+}
