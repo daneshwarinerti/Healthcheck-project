@@ -44,28 +44,28 @@ document.addEventListener("DOMContentLoaded", () => {
         // 1. Latency Chart
         charts.latency = new Chart(document.getElementById('chart-latency').getContext('2d'), {
             type: 'line',
-            data: { labels: trendLabels, datasets: [{ label: 'Latency', data: latencyTrend, borderColor: '#06B6D4', backgroundColor: 'rgba(6, 182, 212, 0.04)', borderWidth: 1.8, fill: true, tension: 0.3, pointRadius: 1 }] },
+            data: { labels: trendLabels, datasets: [{ label: 'Latency', data: latencyTrend, borderColor: '#70B5D9', backgroundColor: 'rgba(112, 181, 217, 0.05)', borderWidth: 1.8, fill: true, tension: 0.1, pointRadius: 1 }] },
             options: chartOptions()
         });
 
         // 2. CPU Chart
         charts.cpu = new Chart(document.getElementById('chart-cpu').getContext('2d'), {
             type: 'line',
-            data: { labels: trendLabels, datasets: [{ label: 'CPU Usage', data: cpuTrend, borderColor: '#3B82F6', backgroundColor: 'rgba(59, 130, 246, 0.04)', borderWidth: 1.8, fill: true, tension: 0.3, pointRadius: 1 }] },
+            data: { labels: trendLabels, datasets: [{ label: 'CPU Usage', data: cpuTrend, borderColor: '#5794F2', backgroundColor: 'rgba(87, 148, 242, 0.05)', borderWidth: 1.8, fill: true, tension: 0.1, pointRadius: 1 }] },
             options: { ...chartOptions(), scales: { x: { display: false }, y: { min: 0, max: 100, grid: { color: gridColor }, ticks: { color: tickColor, font: labelFont } } } }
         });
 
         // 3. RAM Chart
         charts.ram = new Chart(document.getElementById('chart-ram').getContext('2d'), {
             type: 'line',
-            data: { labels: trendLabels, datasets: [{ label: 'Memory', data: ramTrend, borderColor: '#22C55E', backgroundColor: 'rgba(34, 197, 94, 0.04)', borderWidth: 1.8, fill: true, tension: 0.3, pointRadius: 1 }] },
+            data: { labels: trendLabels, datasets: [{ label: 'Memory', data: ramTrend, borderColor: '#73BF69', backgroundColor: 'rgba(115, 191, 105, 0.05)', borderWidth: 1.8, fill: true, tension: 0.1, pointRadius: 1 }] },
             options: { ...chartOptions(), scales: { x: { display: false }, y: { min: 0, max: 100, grid: { color: gridColor }, ticks: { color: tickColor, font: labelFont } } } }
         });
 
         // 4. Availability Chart
         charts.availability = new Chart(document.getElementById('chart-availability').getContext('2d'), {
             type: 'line',
-            data: { labels: trendLabels, datasets: [{ label: 'Availability', data: availabilityTrend, borderColor: '#10B981', backgroundColor: 'rgba(16, 185, 129, 0.04)', borderWidth: 1.8, fill: true, tension: 0.3, pointRadius: 1 }] },
+            data: { labels: trendLabels, datasets: [{ label: 'Availability', data: availabilityTrend, borderColor: '#73BF69', backgroundColor: 'rgba(115, 191, 105, 0.05)', borderWidth: 1.8, fill: true, tension: 0.1, pointRadius: 1 }] },
             options: { ...chartOptions(), scales: { x: { display: false }, y: { min: 0, max: 100, grid: { color: gridColor }, ticks: { color: tickColor, font: labelFont } } } }
         });
 
@@ -76,9 +76,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 labels: ['Healthy', 'Warning', 'Critical', 'Offline'],
                 datasets: [{
                     data: [0, 0, 0, 0],
-                    backgroundColor: ['#22C55E', '#F59E0B', '#EF4444', '#64748B'],
+                    backgroundColor: ['#73BF69', '#FADE2A', '#F2495C', '#8E8E8E'],
                     borderWidth: 2,
-                    borderColor: '#111827'
+                    borderColor: '#181b1f'
                 }]
             },
             options: {
@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // 6. RPM Chart
         charts.rpm = new Chart(document.getElementById('chart-rpm').getContext('2d'), {
             type: 'line',
-            data: { labels: trendLabels, datasets: [{ label: 'RPM', data: rpmTrend, borderColor: '#EC4899', backgroundColor: 'rgba(236, 72, 153, 0.04)', borderWidth: 1.8, fill: true, tension: 0.3, pointRadius: 1 }] },
+            data: { labels: trendLabels, datasets: [{ label: 'RPM', data: rpmTrend, borderColor: '#FF9830', backgroundColor: 'rgba(255, 152, 48, 0.05)', borderWidth: 1.8, fill: true, tension: 0.1, pointRadius: 1 }] },
             options: chartOptions()
         });
     }

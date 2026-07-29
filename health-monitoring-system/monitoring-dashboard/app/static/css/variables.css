@@ -1,60 +1,71 @@
-/* SaaS SRE Design System Variables - Dark Mode Only */
+/* Grafana Dark Theme Design System Variables */
 :root {
-    /* Color Tokens */
-    --primary: #3B82F6;
-    --primary-hover: #2563EB;
-    --primary-glow: rgba(59, 130, 246, 0.1);
+    /* Grafana Palette */
+    --grafana-orange: #FF9830;
+    --grafana-blue: #5794F2;
+    --grafana-green: #73BF69;
+    --grafana-yellow: #FADE2A;
+    --grafana-red: #F2495C;
+    --grafana-purple: #B877D9;
+    --grafana-cyan: #70B5D9;
     
-    --success: #22C55E;
-    --success-glow: rgba(34, 197, 94, 0.1);
+    /* Standard Tokens mapped to Grafana Theme */
+    --primary: #5794F2;
+    --primary-hover: #3372E8;
+    --primary-glow: rgba(87, 148, 242, 0.15);
     
-    --warning: #F59E0B;
-    --warning-glow: rgba(245, 158, 11, 0.1);
+    --success: #73BF69;
+    --success-glow: rgba(115, 191, 105, 0.15);
     
-    --danger: #EF4444;
-    --danger-glow: rgba(239, 68, 68, 0.1);
+    --warning: #FADE2A;
+    --warning-glow: rgba(250, 222, 42, 0.15);
     
-    --info: #06B6D4;
-    --info-glow: rgba(6, 182, 212, 0.1);
+    --danger: #F2495C;
+    --danger-glow: rgba(242, 73, 92, 0.15);
     
-    --offline: #64748B;
-    --offline-glow: rgba(100, 116, 139, 0.1);
+    --info: #70B5D9;
+    --info-glow: rgba(112, 181, 217, 0.15);
     
-    /* Layout Backgrounds */
-    --bg-app: #0B1220;
-    --bg-sidebar: #111827;
-    --bg-card: #1F2937;
-    --bg-navbar: #0B1220;
-    --bg-input: #0F172A;
-    --bg-surface: #1E293B;
+    --offline: #8E8E8E;
+    --offline-glow: rgba(142, 142, 142, 0.15);
     
-    /* Borders */
-    --border-color: rgba(255, 255, 255, 0.06);
-    --border-hover: rgba(255, 255, 255, 0.12);
+    /* Grafana Canvas & Panel Backgrounds */
+    --bg-app: #111217;       /* Grafana main dashboard canvas */
+    --bg-sidebar: #181b1f;   /* Grafana sidebar drawer */
+    --bg-card: #181b1f;      /* Grafana panel card */
+    --bg-panel-header: #181b1f;
+    --bg-navbar: #181b1f;    /* Grafana top navigation bar */
+    --bg-input: #0b0c0e;     /* Grafana dark input fields */
+    --bg-surface: #22252b;   /* Grafana elevated surface */
     
-    /* Typography */
-    --text-primary: #F8FAFC;
-    --text-secondary: #94A3B8;
-    --text-muted: #64748B;
+    /* Grafana Crisp Thin Borders */
+    --border-color: #22252b;
+    --border-panel: #22252b;
+    --border-hover: #343840;
     
-    /* Border Radii */
-    --radius-sm: 6px;
-    --radius-md: 10px;
-    --radius-lg: 14px;
-    --radius-pill: 9999px;
+    /* Grafana Typography Colors */
+    --text-primary: #d8d9da;
+    --text-secondary: #8e8e8e;
+    --text-muted: #6e6e6e;
     
-    /* Spacing Grid (8px baseline) */
-    --space-xs: 8px;
-    --space-sm: 12px;
-    --space-md: 16px;
-    --space-lg: 24px;
-    --space-xl: 32px;
+    /* Grafana Crisp Sharp Corners */
+    --radius-sm: 2px;
+    --radius-md: 2px;
+    --radius-lg: 2px;
+    --radius-pill: 2px;
+    
+    /* Spacing Grid */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 12px;
+    --space-lg: 16px;
+    --space-xl: 24px;
     
     /* Shadows */
-    --shadow-soft: 0 4px 20px -2px rgba(0, 0, 0, 0.3), 0 2px 8px -1px rgba(0, 0, 0, 0.2);
-    --shadow-glow: 0 0 15px rgba(59, 130, 246, 0.15);
+    --shadow-soft: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+    --shadow-glow: 0 0 10px rgba(87, 148, 242, 0.2);
     
     /* Animations */
-    --transition-speed: 150ms;
-    --transition-curve: cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-speed: 120ms;
+    --transition-curve: ease-in-out;
 }

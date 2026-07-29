@@ -1,6 +1,6 @@
-/* SaaS Navigation Sidebar Styles */
+/* Grafana Sidebar Navigation Styles */
 .sidebar-panel {
-    width: 260px;
+    width: 240px;
     height: 100vh;
     background-color: var(--bg-sidebar) !important;
     border-right: 1px solid var(--border-color);
@@ -12,40 +12,40 @@
 }
 
 .sidebar-header {
-    height: 60px;
-    padding: 0 var(--space-lg);
+    height: 52px;
+    padding: 0 var(--space-md);
     display: flex;
     align-items: center;
-    gap: var(--space-xs);
+    gap: 10px;
     border-bottom: 1px solid var(--border-color);
 }
 
 .sidebar-header svg {
-    width: 20px;
-    height: 20px;
-    stroke-width: 2.5;
+    width: 22px;
+    height: 22px;
+    color: var(--grafana-orange);
 }
 
 .sidebar-brand-txt {
-    font-size: 0.9rem;
-    font-weight: var(--font-bold);
-    letter-spacing: 1.5px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 1px;
     color: var(--text-primary);
 }
 
 .sidebar-nav-container {
     flex: 1;
     overflow-y: auto;
-    padding: var(--space-md) var(--space-sm);
+    padding: var(--space-sm) 0;
 }
 
 .sidebar-group-header {
     font-size: 0.65rem;
-    font-weight: var(--font-bold);
+    font-weight: 700;
     color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 1.2px;
-    margin: var(--space-md) 0 var(--space-xs) var(--space-md);
+    letter-spacing: 1px;
+    margin: var(--space-md) 0 4px var(--space-md);
 }
 
 .sidebar-nav-list {
@@ -54,31 +54,32 @@
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 1px;
 }
 
 .sidebar-link {
     display: flex;
     align-items: center;
-    gap: var(--space-sm);
-    padding: 8px var(--space-md);
+    gap: 10px;
+    padding: 9px var(--space-md);
     color: var(--text-secondary) !important;
     text-decoration: none;
-    font-size: 0.85rem;
-    font-weight: var(--font-medium);
-    border-radius: var(--radius-md);
-    transition: all var(--transition-speed) var(--transition-curve);
+    font-size: 0.82rem;
+    font-weight: 500;
+    border-left: 2px solid transparent;
+    transition: all var(--transition-speed);
 }
 
 .sidebar-link:hover {
     color: var(--text-primary) !important;
-    background-color: rgba(255, 255, 255, 0.02);
+    background-color: rgba(255, 255, 255, 0.03);
 }
 
 .sidebar-link.active {
-    color: var(--primary) !important;
-    background-color: var(--primary-glow) !important;
-    font-weight: var(--font-semibold);
+    color: var(--text-primary) !important;
+    background-color: rgba(87, 148, 242, 0.1) !important;
+    border-left-color: var(--grafana-orange) !important;
+    font-weight: 600;
 }
 
 .sidebar-link svg {
@@ -88,13 +89,13 @@
 }
 
 .sidebar-footer-panel {
-    padding: var(--space-md) var(--space-lg);
+    padding: var(--space-md);
     border-top: 1px solid var(--border-color);
-    background-color: rgba(0, 0, 0, 0.15);
+    background-color: rgba(0, 0, 0, 0.2);
 }
 
 .sidebar-version-tag {
-    font-size: 0.68rem;
+    font-size: 0.65rem;
     color: var(--text-muted);
     margin-top: 4px;
     font-family: monospace;

@@ -16,37 +16,37 @@
 </head>
 <body>
     <div class="app-shell">
-        <!-- SaaS Navigation Sidebar -->
+        <!-- Grafana Navigation Sidebar -->
         {% if user %}
         <aside class="sidebar-panel" id="app-sidebar">
             <div class="sidebar-header">
-                <i data-lucide="activity" class="text-primary animate-pulse"></i>
-                <span class="sidebar-brand-txt">SRE PORTAL</span>
-                <button class="btn btn-icon d-lg-none ms-auto" id="sidebar-close-btn" style="border: none; background: transparent; padding: 0;">
-                    <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+                <i data-lucide="activity" style="color: var(--grafana-orange);"></i>
+                <span class="sidebar-brand-txt">GRAFANA</span>
+                <button class="btn btn-icon d-lg-none ms-auto" id="sidebar-close-btn" style="border: none; background: transparent; padding: 0; color: var(--text-secondary);">
+                    <i data-lucide="x" style="width: 16px; height: 16px;"></i>
                 </button>
             </div>
             
             <div class="sidebar-nav-container">
-                <!-- Main Navigation Group -->
-                <div class="sidebar-group-header">Main</div>
+                <!-- Dashboards Group -->
+                <div class="sidebar-group-header">Dashboards</div>
                 <ul class="sidebar-nav-list">
                     <li>
                         <a href="/" class="sidebar-link animate-fade" id="nav-dashboard">
                             <i data-lucide="layout-dashboard"></i>
-                            <span>Dashboard</span>
+                            <span>Overview</span>
                         </a>
                     </li>
                     <li>
                         <a href="/logs/view" class="sidebar-link animate-fade" id="nav-logs">
                             <i data-lucide="terminal"></i>
-                            <span>Logs Ledger</span>
+                            <span>Explore Logs</span>
                         </a>
                     </li>
                 </ul>
                 
-                <!-- Management Navigation Group -->
-                <div class="sidebar-group-header">Management</div>
+                <!-- Administration Group -->
+                <div class="sidebar-group-header">Administration</div>
                 <ul class="sidebar-nav-list">
                     {% if user.role == "Admin" %}
                     <li>
@@ -62,21 +62,21 @@
             <div class="sidebar-footer-panel">
                 <div class="dropdown">
                     <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle gap-2.5" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
-                        <div class="user-avatar text-white">
+                        <div class="user-avatar text-white" style="background-color: var(--grafana-blue);">
                             {{ user.first_name[0] | upper }}{{ user.last_name[0] | upper }}
                         </div>
                         <div class="d-flex flex-column text-start" style="font-size: 0.8rem; min-width: 0;">
-                            <span class="fw-semibold text-truncate" style="max-width: 120px;">{{ user.first_name }} {{ user.last_name }}</span>
-                            <span class="text-muted text-truncate" style="font-size: 0.7rem;">{{ user.role }}</span>
+                            <span class="fw-semibold text-truncate" style="max-width: 110px;">{{ user.first_name }} {{ user.last_name }}</span>
+                            <span class="text-muted text-truncate" style="font-size: 0.68rem;">{{ user.role }}</span>
                         </div>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser" style="background-color: var(--bg-card); border: 1px solid var(--border-color);">
+                    <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser" style="background-color: #181b1f; border: 1px solid #22252b;">
                         <li><span class="dropdown-item-text text-muted small">{{ user.email }}</span></li>
-                        <li><hr class="dropdown-divider border-dark-30" style="border-top-color: var(--border-color);"></li>
+                        <li><hr class="dropdown-divider border-dark-30" style="border-top-color: #22252b;"></li>
                         <li><a class="dropdown-item text-danger" href="/logout"><i class="me-2" data-lucide="log-out" style="width: 14px; height: 14px;"></i>Logout</a></li>
                     </ul>
                 </div>
-                <div class="sidebar-version-tag">VERSION 2.1.0-STABLE</div>
+                <div class="sidebar-version-tag">GRAFANA v10.4.0</div>
             </div>
         </aside>
         {% endif %}
@@ -84,30 +84,35 @@
         <!-- Content Area Container -->
         <div class="main-container">
             {% if user %}
-            <!-- Topbar Control Center -->
+            <!-- Grafana Topbar Navigation -->
             <header class="topbar-nav">
                 <div class="topbar-nav-left">
                     <button class="btn-sre-icon d-lg-none" id="sidebar-toggle-btn" title="Toggle Sidebar">
                         <i data-lucide="menu"></i>
                     </button>
-                    <span class="header-title" id="page-header-title">
-                        {% block header_title %}Monitoring Dashboard{% endblock %}
-                    </span>
+                    <div class="grafana-breadcrumb">
+                        <i data-lucide="activity" style="color: var(--grafana-orange); width: 16px; height: 16px;"></i>
+                        <span>Dashboards</span>
+                        <span class="text-muted">/</span>
+                        <span class="grafana-breadcrumb-active" id="page-header-title">
+                            {% block header_title %}Infrastructure Health Overview{% endblock %}
+                        </span>
+                    </div>
                 </div>
                 
                 <div class="topbar-nav-right">
-                    <!-- Live Time (UTC) -->
-                    <div class="d-none d-md-flex align-items-center gap-1.5 text-muted small" style="font-family: monospace;">
-                        <i data-lucide="clock" style="width: 14px; height: 14px;"></i>
+                    <!-- Grafana Time Picker Dropdown -->
+                    <div class="grafana-time-picker d-none d-md-flex">
+                        <i data-lucide="clock"></i>
                         <span id="live-utc-clock">UTC 00:00:00</span>
                     </div>
 
-                    <!-- Sync Status -->
-                    <div class="d-flex align-items-center gap-2 px-2.5 py-1 rounded-pill" style="background-color: rgba(255,255,255,0.02); border: 1px solid var(--border-color);">
-                        <span id="refresh-pulse" class="status-dot healthy animate-pulse" style="width: 6px; height: 6px;"></span>
-                        <span id="refresh-text" class="text-muted fw-medium" style="font-size: 0.72rem;">SYNC: ACTIVE</span>
+                    <!-- Grafana Sync Refresh Control -->
+                    <div class="grafana-time-picker">
+                        <span id="refresh-pulse" class="status-dot healthy animate-pulse"></span>
+                        <span id="refresh-text" style="font-size:0.75rem;">15s</span>
                         <div class="form-check form-switch m-0 ms-1 p-0 d-flex align-items-center" style="min-height: auto;">
-                            <input class="form-check-input pointer" type="checkbox" id="auto-refresh-toggle" checked style="margin-left: 0; width: 1.8em; height: 0.9em; cursor: pointer;">
+                            <input class="form-check-input pointer" type="checkbox" id="auto-refresh-toggle" checked style="margin-left: 0; width: 1.6em; height: 0.8em; cursor: pointer;">
                         </div>
                     </div>
                 </div>
@@ -123,11 +128,11 @@
 
     <!-- Toast Notification Container -->
     <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
-        <div id="status-toast" class="toast align-items-center border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="4000" style="background-color: var(--bg-card); border: 1px solid var(--border-color) !important;">
+        <div id="status-toast" class="toast align-items-center border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="4000" style="background-color: #181b1f; border: 1px solid #22252b !important;">
             <div class="d-flex">
                 <div class="toast-body d-flex align-items-center gap-2">
-                    <i id="toast-icon" style="width: 18px; height: 18px;"></i>
-                    <span id="toast-message" class="fw-medium text-white" style="font-size: 0.85rem;"></span>
+                    <i id="toast-icon" style="width: 16px; height: 16px;"></i>
+                    <span id="toast-message" class="fw-medium text-white" style="font-size: 0.82rem;"></span>
                 </div>
                 <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
@@ -153,7 +158,6 @@
             setInterval(updateTime, 1000);
         }
 
-        // Sidebar responsive handlers
         function initSidebar() {
             const toggleBtn = document.getElementById("sidebar-toggle-btn");
             const closeBtn = document.getElementById("sidebar-close-btn");
@@ -167,7 +171,6 @@
             }
         }
         
-        // SRE Global Notification function
         function showNotification(message, type = "success") {
             const toastEl = document.getElementById("status-toast");
             if (!toastEl) return;
@@ -180,15 +183,15 @@
             if (type === "success") {
                 toastEl.classList.add("border-success");
                 icon.setAttribute("data-lucide", "check-circle");
-                icon.style.color = "var(--success)";
+                icon.style.color = "var(--grafana-green)";
             } else if (type === "error" || type === "danger") {
                 toastEl.classList.add("border-danger");
                 icon.setAttribute("data-lucide", "alert-circle");
-                icon.style.color = "var(--danger)";
+                icon.style.color = "var(--grafana-red)";
             } else {
                 toastEl.classList.add("border-info");
                 icon.setAttribute("data-lucide", "info");
-                icon.style.color = "var(--info)";
+                icon.style.color = "var(--grafana-cyan)";
             }
             
             msgSpan.textContent = message;

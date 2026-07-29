@@ -1,57 +1,57 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard - {{ app_name }}{% endblock %}
+{% block title %}Grafana Dashboard - {{ app_name }}{% endblock %}
 
-{% block header_title %}SRE Portal - Clusters Overview{% endblock %}
+{% block header_title %}Cluster Infrastructure Health{% endblock %}
 
 {% block content %}
-<!-- SRE Summary Cards Row -->
+<!-- Grafana Stat Panels Row -->
 <div class="kpi-grid">
-    <!-- Total Services Card -->
+    <!-- Total Services Stat Card -->
     <div class="card-enterprise kpi-card">
         <div class="kpi-header">
             <span>Active Targets</span>
-            <i data-lucide="network" class="text-primary"></i>
+            <i data-lucide="network" style="color: var(--grafana-blue);"></i>
         </div>
         <div class="kpi-value" id="card-total-services">0</div>
         <div class="kpi-subtext">Configured monitoring nodes</div>
     </div>
     
-    <!-- Healthy Services Card -->
-    <div class="card-enterprise kpi-card">
+    <!-- Healthy Services Stat Card -->
+    <div class="card-enterprise kpi-card healthy-stat">
         <div class="kpi-header">
             <span>Healthy</span>
-            <i data-lucide="check-circle-2" class="text-success"></i>
+            <i data-lucide="check-circle-2" style="color: var(--grafana-green);"></i>
         </div>
         <div class="kpi-value text-success" id="card-healthy-services">0</div>
         <div class="kpi-subtext">Online & responding</div>
     </div>
     
-    <!-- Warning Services Card -->
-    <div class="card-enterprise kpi-card">
+    <!-- Warning Services Stat Card -->
+    <div class="card-enterprise kpi-card warning-stat">
         <div class="kpi-header">
             <span>Warning</span>
-            <i data-lucide="help-circle" class="text-warning"></i>
+            <i data-lucide="help-circle" style="color: var(--grafana-yellow);"></i>
         </div>
         <div class="kpi-value text-warning" id="card-warning-services">0</div>
         <div class="kpi-subtext">Degraded performance</div>
     </div>
     
-    <!-- Critical/Offline Services Card -->
-    <div class="card-enterprise kpi-card">
+    <!-- Critical/Offline Services Stat Card -->
+    <div class="card-enterprise kpi-card critical-stat">
         <div class="kpi-header">
             <span>Critical & Offline</span>
-            <i data-lucide="alert-circle" class="text-danger"></i>
+            <i data-lucide="alert-circle" style="color: var(--grafana-red);"></i>
         </div>
         <div class="kpi-value text-danger" id="card-critical-offline-services">0</div>
         <div class="kpi-subtext">Connection or status issues</div>
     </div>
 
-    <!-- Avg Response Latency Card -->
-    <div class="card-enterprise kpi-card">
+    <!-- Avg Response Latency Stat Card -->
+    <div class="card-enterprise kpi-card latency-stat">
         <div class="kpi-header">
             <span>Avg Latency</span>
-            <i data-lucide="activity" class="text-info"></i>
+            <i data-lucide="activity" style="color: var(--grafana-cyan);"></i>
         </div>
         <div class="kpi-value text-info">
             <span id="card-avg-latency">0</span><span style="font-size: 0.95rem; font-weight: normal; margin-left: 2px;">ms</span>
@@ -60,7 +60,7 @@
     </div>
 </div>
 
-<!-- SRE Host Resource Metrics Row -->
+<!-- Grafana Host Resource Gauge Panels Row -->
 <div class="row g-3 mb-4">
     <!-- CPU Metric Card -->
     <div class="col-12 col-sm-6 col-md-3">
@@ -73,7 +73,7 @@
                 <div class="kpi-value m-0 fs-3" id="card-cpu-percent">0%</div>
             </div>
             <div class="progress mt-2" style="height: 4px; background-color: rgba(255,255,255,0.05); border-radius: 2px;">
-                <div class="progress-bar bg-primary" id="bar-cpu" role="progressbar" style="width: 0%"></div>
+                <div class="progress-bar" id="bar-cpu" role="progressbar" style="width: 0%; background-color: var(--grafana-blue);"></div>
             </div>
         </div>
     </div>
@@ -89,7 +89,7 @@
                 <div class="kpi-value m-0 fs-3" id="card-ram-percent">0%</div>
             </div>
             <div class="progress mt-2" style="height: 4px; background-color: rgba(255,255,255,0.05); border-radius: 2px;">
-                <div class="progress-bar bg-success" id="bar-ram" role="progressbar" style="width: 0%"></div>
+                <div class="progress-bar" id="bar-ram" role="progressbar" style="width: 0%; background-color: var(--grafana-green);"></div>
             </div>
         </div>
     </div>
@@ -105,7 +105,7 @@
                 <div class="kpi-value m-0 fs-3" id="card-disk-percent">0%</div>
             </div>
             <div class="progress mt-2" style="height: 4px; background-color: rgba(255,255,255,0.05); border-radius: 2px;">
-                <div class="progress-bar bg-warning" id="bar-disk" role="progressbar" style="width: 0%"></div>
+                <div class="progress-bar" id="bar-disk" role="progressbar" style="width: 0%; background-color: var(--grafana-yellow);"></div>
             </div>
         </div>
     </div>
@@ -121,64 +121,66 @@
                 <div class="kpi-value m-0 fs-5 text-truncate" id="card-net-io">↑ 0 / ↓ 0 MB</div>
             </div>
             <div class="progress mt-2" style="height: 4px; background-color: rgba(255,255,255,0.05); border-radius: 2px;">
-                <div class="progress-bar bg-info" role="progressbar" style="width: 100%"></div>
+                <div class="progress-bar" role="progressbar" style="width: 100%; background-color: var(--grafana-cyan);"></div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- SRE Dynamic Charts Row -->
+<!-- Grafana Dynamic Visualizations Panels Row -->
 <div class="row g-4 mb-4">
     <!-- Left Column: Graph Visualizations Grid (6-Charts Layout) -->
     <div class="col-12 col-xl-9">
-        <div class="card-enterprise p-4">
-            <h5 class="dashboard-section-header">
-                <i data-lucide="trending-up"></i>
-                <span>Telemetry Visualizations</span>
-            </h5>
+        <div class="card-enterprise p-3">
+            <div class="grafana-panel-header mb-3">
+                <span class="grafana-panel-title">
+                    <i data-lucide="trending-up"></i>
+                    Telemetry Visualizations
+                </span>
+            </div>
             
             <div class="row g-3">
-                <!-- Latency Graph -->
+                <!-- Latency Graph Panel -->
                 <div class="col-12 col-md-6 col-lg-4">
-                    <div class="p-3 border rounded" style="background-color: rgba(0,0,0,0.1); border-color: var(--border-color) !important;">
-                        <span class="form-label-enterprise mb-2 d-block" style="font-size:0.7rem;">Response Time (ms)</span>
+                    <div class="p-2 border rounded" style="background-color: #111217; border-color: #22252b !important;">
+                        <span class="form-label-enterprise mb-2 d-block" style="font-size:0.68rem;">Response Time (ms)</span>
                         <div class="chart-canvas-wrapper"><canvas id="chart-latency"></canvas></div>
                     </div>
                 </div>
-                <!-- CPU Graph -->
+                <!-- CPU Graph Panel -->
                 <div class="col-12 col-md-6 col-lg-4">
-                    <div class="p-3 border rounded" style="background-color: rgba(0,0,0,0.1); border-color: var(--border-color) !important;">
-                        <span class="form-label-enterprise mb-2 d-block" style="font-size:0.7rem;">CPU Utilization %</span>
+                    <div class="p-2 border rounded" style="background-color: #111217; border-color: #22252b !important;">
+                        <span class="form-label-enterprise mb-2 d-block" style="font-size:0.68rem;">CPU Utilization %</span>
                         <div class="chart-canvas-wrapper"><canvas id="chart-cpu"></canvas></div>
                     </div>
                 </div>
-                <!-- RAM Graph -->
+                <!-- RAM Graph Panel -->
                 <div class="col-12 col-md-6 col-lg-4">
-                    <div class="p-3 border rounded" style="background-color: rgba(0,0,0,0.1); border-color: var(--border-color) !important;">
-                        <span class="form-label-enterprise mb-2 d-block" style="font-size:0.7rem;">Memory Utilization %</span>
+                    <div class="p-2 border rounded" style="background-color: #111217; border-color: #22252b !important;">
+                        <span class="form-label-enterprise mb-2 d-block" style="font-size:0.68rem;">Memory Utilization %</span>
                         <div class="chart-canvas-wrapper"><canvas id="chart-ram"></canvas></div>
                     </div>
                 </div>
-                <!-- Availability -->
+                <!-- Availability Panel -->
                 <div class="col-12 col-md-6 col-lg-4">
-                    <div class="p-3 border rounded" style="background-color: rgba(0,0,0,0.1); border-color: var(--border-color) !important;">
-                        <span class="form-label-enterprise mb-2 d-block" style="font-size:0.7rem;">Uptime Availability %</span>
+                    <div class="p-2 border rounded" style="background-color: #111217; border-color: #22252b !important;">
+                        <span class="form-label-enterprise mb-2 d-block" style="font-size:0.68rem;">Uptime Availability %</span>
                         <div class="chart-canvas-wrapper"><canvas id="chart-availability"></canvas></div>
                     </div>
                 </div>
-                <!-- Status Distribution -->
+                <!-- Status Distribution Panel -->
                 <div class="col-12 col-md-6 col-lg-4">
-                    <div class="p-3 border rounded" style="background-color: rgba(0,0,0,0.1); border-color: var(--border-color) !important;">
-                        <span class="form-label-enterprise mb-2 d-block" style="font-size:0.7rem;">Status Allocations</span>
+                    <div class="p-2 border rounded" style="background-color: #111217; border-color: #22252b !important;">
+                        <span class="form-label-enterprise mb-2 d-block" style="font-size:0.68rem;">Status Distribution</span>
                         <div class="chart-canvas-wrapper d-flex align-items-center justify-content-center">
-                            <canvas id="chart-distribution" style="max-height:170px; max-width:170px;"></canvas>
+                            <canvas id="chart-distribution" style="max-height:160px; max-width:160px;"></canvas>
                         </div>
                     </div>
                 </div>
-                <!-- RPM Requests Rate -->
+                <!-- RPM Requests Rate Panel -->
                 <div class="col-12 col-md-6 col-lg-4">
-                    <div class="p-3 border rounded" style="background-color: rgba(0,0,0,0.1); border-color: var(--border-color) !important;">
-                        <span class="form-label-enterprise mb-2 d-block" style="font-size:0.7rem;">Requests Rate (RPM)</span>
+                    <div class="p-2 border rounded" style="background-color: #111217; border-color: #22252b !important;">
+                        <span class="form-label-enterprise mb-2 d-block" style="font-size:0.68rem;">Requests Rate (RPM)</span>
                         <div class="chart-canvas-wrapper"><canvas id="chart-rpm"></canvas></div>
                     </div>
                 </div>
@@ -186,20 +188,20 @@
         </div>
     </div>
 
-    <!-- Right Column: SRE Active Alerts Feed -->
+    <!-- Right Column: Grafana Alerts Panel -->
     <div class="col-12 col-xl-3">
-        <div class="card-enterprise h-100 d-flex flex-column" style="max-height: 575px;">
-            <div class="pb-3 border-bottom border-dark-30 d-flex align-items-center justify-content-between" style="border-bottom-color: var(--border-color) !important;">
-                <h5 class="dashboard-section-header m-0">
-                    <i data-lucide="bell" class="text-warning"></i>
-                    <span>Alert Logs Feed</span>
-                </h5>
+        <div class="card-enterprise h-100 d-flex flex-column" style="max-height: 560px;">
+            <div class="grafana-panel-header mb-2 pb-2">
+                <span class="grafana-panel-title">
+                    <i data-lucide="bell" style="color: var(--grafana-yellow);"></i>
+                    Alert List Panel
+                </span>
                 <span class="badge bg-danger animate-pulse" id="alert-active-badge">0 Active</span>
             </div>
             
-            <div class="flex-grow-1 overflow-y-auto pt-3" id="alerts-panel-body">
+            <div class="flex-grow-1 overflow-y-auto pt-2" id="alerts-panel-body">
                 <div class="text-center text-muted py-5" id="alerts-empty-state">
-                    <i data-lucide="shield-check" class="text-success mb-2" style="width: 32px; height: 32px;"></i>
+                    <i data-lucide="shield-check" style="color: var(--grafana-green); width: 32px; height: 32px;" class="mb-2"></i>
                     <p class="small mt-1 text-secondary">Zero active target warnings or server outages detected.</p>
                 </div>
                 <div class="alerts-feed d-flex flex-column gap-2" id="alerts-timeline-container">
@@ -210,14 +212,14 @@
     </div>
 </div>
 
-<!-- Services Filter & Search Panel -->
+<!-- Grafana Table Toolbar -->
 <div class="card-enterprise p-3 mb-3">
     <div class="row g-3 align-items-center">
         <!-- Search bar -->
         <div class="col-12 col-md-4">
             <div class="position-relative">
-                <input type="text" class="form-control-enterprise" id="table-search-input" placeholder="Search service name, host IP coordinates...">
-                <i data-lucide="search" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; color: var(--text-muted);"></i>
+                <input type="text" class="form-control-enterprise" id="table-search-input" placeholder="Filter targets by name, address...">
+                <i data-lucide="search" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; color: var(--text-muted);"></i>
             </div>
         </div>
         
@@ -254,37 +256,36 @@
 
         <!-- Controls -->
         <div class="col-6 col-md-2 text-end">
-            <button class="btn-sre btn-sre-primary w-100 py-2 d-flex align-items-center justify-content-center gap-1.5" id="btn-restart-scheduler" title="Force trigger checking sweep">
-                <i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i>
-                <span>Force Poll</span>
+            <button class="btn-sre btn-sre-primary w-100 py-1.5 d-flex align-items-center justify-content-center gap-1.5" id="btn-restart-scheduler" title="Force trigger checking sweep">
+                <i data-lucide="refresh-cw" style="width: 13px; height: 13px;"></i>
+                <span>Query Now</span>
             </button>
         </div>
     </div>
 </div>
 
-<!-- Compact SRE Target Nodes Table -->
+<!-- Grafana Compact Data Table Panel -->
 <div class="table-responsive-container">
     <div class="table-responsive">
         <table class="table-enterprise align-middle" id="services-table">
             <thead>
                 <tr>
-                    <th class="ps-4">Service</th>
+                    <th class="ps-3">Service</th>
                     <th>Environment</th>
-                    <th>Address Coordinates</th>
+                    <th>Address</th>
                     <th>Status</th>
                     <th>Latency</th>
-                    <th>Uptime status</th>
-                    <th>Last 20 Checks</th>
+                    <th>Uptime %</th>
+                    <th>Check History</th>
                     <th>Version</th>
-                    <th class="pe-4 text-end">Actions</th>
+                    <th class="pe-3 text-end">Actions</th>
                 </tr>
             </thead>
             <tbody id="services-tbody">
-                <!-- Skeleton loader rows initially -->
                 <tr class="skeleton-tr">
                     <td colspan="9" class="text-center py-5 text-muted">
-                        <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
-                        Scanning target cluster configurations...
+                        <div class="spinner-border spinner-border-sm me-2" role="status" style="color: var(--grafana-orange);"></div>
+                        Querying targets dataset...
                     </td>
                 </tr>
             </tbody>
@@ -296,12 +297,12 @@
 <div class="detail-drawer-backdrop" id="drawer-backdrop"></div>
 <aside class="detail-drawer" id="service-detail-drawer">
     <div class="detail-drawer-header">
-        <h5 class="m-0 fw-bold text-white d-flex align-items-center gap-2">
-            <i data-lucide="server" class="text-primary" style="width: 18px; height: 18px;"></i>
+        <h5 class="m-0 fw-bold text-white d-flex align-items-center gap-2" style="font-size:0.9rem;">
+            <i data-lucide="server" style="color: var(--grafana-blue); width: 16px; height: 16px;"></i>
             <span id="drawer-service-name">Service Inspector</span>
         </h5>
         <button class="btn btn-icon" id="drawer-close-btn" style="border: none; background: transparent; color: var(--text-secondary);">
-            <i data-lucide="x"></i>
+            <i data-lucide="x" style="width: 16px; height: 16px;"></i>
         </button>
     </div>
     <div class="detail-drawer-body">

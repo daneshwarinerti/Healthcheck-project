@@ -1,18 +1,45 @@
-/* SaaS Card Redesigns */
-.card-enterprise {
+/* Grafana Panel & Stat Card Stylesheet */
+.card-enterprise, .grafana-panel {
     background-color: var(--bg-card) !important;
-    border: 1px solid var(--border-color) !important;
+    border: 1px solid var(--border-panel) !important;
     border-radius: var(--radius-lg) !important;
     padding: var(--space-md);
     box-shadow: var(--shadow-soft);
-    transition: border-color var(--transition-speed) var(--transition-curve), box-shadow var(--transition-speed) var(--transition-curve);
+    position: relative;
+    transition: border-color var(--transition-speed) var(--transition-curve);
 }
 
-.card-enterprise:hover {
+.card-enterprise:hover, .grafana-panel:hover {
     border-color: var(--border-hover) !important;
 }
 
-/* KPI metric grid system */
+/* Grafana Panel Title Bar */
+.grafana-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: var(--space-xs);
+    margin-bottom: var(--space-xs);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.grafana-panel-title {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    letter-spacing: 0.2px;
+}
+
+.grafana-panel-title svg {
+    width: 14px;
+    height: 14px;
+    color: var(--grafana-orange);
+}
+
+/* Grafana Stat Panels Grid */
 .kpi-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -24,36 +51,40 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: 104px;
+    min-height: 96px;
+    border-left: 3px solid var(--grafana-blue) !important;
 }
+
+.kpi-card.healthy-stat { border-left-color: var(--grafana-green) !important; }
+.kpi-card.warning-stat { border-left-color: var(--grafana-yellow) !important; }
+.kpi-card.critical-stat { border-left-color: var(--grafana-red) !important; }
+.kpi-card.latency-stat { border-left-color: var(--grafana-cyan) !important; }
 
 .kpi-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     color: var(--text-secondary);
-    font-size: 0.68rem;
-    font-weight: var(--font-bold);
+    font-size: 0.7rem;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
 }
 
 .kpi-value {
-    font-size: 1.7rem;
-    font-weight: var(--font-bold);
+    font-size: 1.8rem;
+    font-weight: 700;
     color: var(--text-primary);
-    margin-top: var(--space-xs);
-    margin-bottom: 4px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    font-family: Inter, -apple-system, sans-serif;
 }
 
 .kpi-subtext {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     color: var(--text-muted);
     margin: 0;
     display: flex;
     align-items: center;
     gap: 4px;
 }
-
-.text-trend-up { color: var(--success); }
-.text-trend-down { color: var(--danger); }

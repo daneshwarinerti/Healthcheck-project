@@ -1,43 +1,46 @@
-/* SaaS Buttons Stylesheet */
+/* Grafana Buttons Stylesheet */
 .btn-sre {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: var(--space-xs);
-    font-size: 0.85rem;
-    font-weight: var(--font-medium);
-    padding: 6px 14px;
-    border-radius: var(--radius-md);
+    gap: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 5px 12px;
+    border-radius: 2px;
     border: 1px solid transparent;
     cursor: pointer;
-    transition: all var(--transition-speed) var(--transition-curve);
+    transition: all var(--transition-speed);
     outline: none;
     text-decoration: none;
 }
 
 .btn-sre:disabled {
-    opacity: 0.55;
+    opacity: 0.5;
     cursor: not-allowed;
 }
 
-/* Button Variants */
+/* Grafana Blue & Orange Buttons */
 .btn-sre-primary {
-    background-color: var(--primary);
-    color: #ffffff !important;
+    background-color: var(--grafana-blue);
+    color: #111217 !important;
+    font-weight: 600;
+    border-color: var(--grafana-blue);
 }
 .btn-sre-primary:hover:not(:disabled) {
-    background-color: var(--primary-hover);
+    background-color: #3372E8;
+    border-color: #3372E8;
+    color: #ffffff !important;
 }
 
 .btn-sre-secondary {
-    background-color: var(--bg-surface);
-    border: 1px solid var(--border-color);
-    color: var(--text-secondary) !important;
+    background-color: #22252b;
+    border: 1px solid #343840;
+    color: var(--text-primary) !important;
 }
 .btn-sre-secondary:hover:not(:disabled) {
-    color: var(--text-primary) !important;
-    border-color: var(--border-hover);
-    background-color: rgba(255, 255, 255, 0.02);
+    background-color: #2c3038;
+    border-color: #464c56;
 }
 
 .btn-sre-ghost {
@@ -46,28 +49,26 @@
 }
 .btn-sre-ghost:hover:not(:disabled) {
     color: var(--text-primary) !important;
-    background-color: rgba(255, 255, 255, 0.02);
+    background-color: rgba(255, 255, 255, 0.04);
 }
 
 .btn-sre-danger {
-    background-color: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.15);
-    color: var(--danger) !important;
+    background-color: rgba(242, 73, 92, 0.15);
+    border: 1px solid rgba(242, 73, 92, 0.3);
+    color: var(--grafana-red) !important;
 }
 .btn-sre-danger:hover:not(:disabled) {
-    background-color: var(--danger);
+    background-color: var(--grafana-red);
     color: #ffffff !important;
-    border-color: var(--danger);
 }
 
-/* Icon Buttons */
 .btn-sre-icon {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     padding: 0;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border-color);
-    background-color: var(--bg-input);
+    border-radius: 2px;
+    border: 1px solid #343840;
+    background-color: #22252b;
     color: var(--text-secondary);
     display: inline-flex;
     align-items: center;
@@ -77,10 +78,10 @@
 }
 .btn-sre-icon:hover {
     color: var(--text-primary);
-    border-color: var(--border-hover);
-    background-color: rgba(255, 255, 255, 0.03);
+    border-color: #464c56;
+    background-color: #2c3038;
 }
 .btn-sre-icon svg {
-    width: 15px;
-    height: 15px;
+    width: 14px;
+    height: 14px;
 }
