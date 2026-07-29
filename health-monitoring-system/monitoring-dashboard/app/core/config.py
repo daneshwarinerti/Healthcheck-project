@@ -10,6 +10,12 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 app_env = os.getenv("APP_ENV", os.getenv("ENV_STATE", "development")).lower()
 env_filename = f".env.{app_env}"
 
+# Safely force SQLite fallback in development/testing if a global PostgreSQL env var is active
+if app_env in ("development", "testing") and "DATABASE_URL" in os.environ:
+    if os.environ["DATABASE_URL"].startswith("postgresql"):
+        print(f"Config: Global PostgreSQL environment variable detected. Clearing it in '{app_env}' mode to force SQLite.")
+        del os.environ["DATABASE_URL"]
+
 # If the targeted environment config file doesn't exist, check standard .env
 if not os.path.exists(env_filename) and os.path.exists(".env"):
     env_filename = ".env"
