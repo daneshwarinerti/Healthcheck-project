@@ -2,48 +2,6 @@
 
 An enterprise-grade, cloud-native **Health Monitoring System** deployed on **Amazon EKS** with automated **GitHub Actions CI/CD**, persistent **Amazon EBS storage**, **AWS Application Load Balancer (ALB)** ingress, and full observability using **kube-prometheus-stack (Prometheus & Grafana)**.
 
----
-
-## 📐 Architecture Overview
-
-```mermaid
-flowchart TD
-    subgraph Developer & CI/CD Pipeline
-        DEV[Developer Push to main] -->|git push| GH[GitHub Repository]
-        GH --> ACTIONS[GitHub Actions Workflow .github/workflows/deploy.yml]
-        ACTIONS --> TEST[Stage 1: Application Unit Tests]
-        TEST --> DOCKER[Stage 2: Build Docker Images SHA & latest]
-        DOCKER --> ECR_PUSH[Stage 3: Push Images to Amazon ECR]
-        ECR_PUSH --> EKS_AUTH[Stage 4: Authenticate to Amazon EKS]
-        EKS_AUTH --> ROLLOUT[Stage 5: Zero-Downtime Rolling Update]
-        ROLLOUT --> STATUS[Stage 6: Verify Rollout Status]
-    end
-
-    subgraph AWS Cloud Infrastructure (us-east-1)
-        subgraph Amazon EKS Cluster: health-monitoring-cluster
-            ALB[AWS Application Load Balancer] --> INGRESS[ALB Ingress target-type: ip]
-            
-            subgraph Namespace: health-monitoring
-                INGRESS --> DASHBOARD[monitoring-dashboard 2 Replicas]
-                INGRESS --> USER_SVC[user-service 2 Replicas]
-                INGRESS --> PAY_SVC[payment-service 2 Replicas]
-                INGRESS --> NOTIF_SVC[notification-service 2 Replicas]
-                
-                DASHBOARD --> DB[(PostgreSQL 15 Persistent EBS gp3)]
-                DASHBOARD --> REDIS[(Redis 7 Cache)]
-                DASHBOARD --> RABBIT[(RabbitMQ 3 AMQP & Management EBS gp3)]
-            end
-
-            subgraph Namespace: monitoring
-                PROM[Prometheus Server] --> GRAFANA[Grafana Dashboards :3000]
-                PROM --> OPERATOR[Prometheus Operator]
-                PROM --> METRICS[kube-state-metrics & node-exporter]
-            end
-        end
-    end
-```
-
----
 
 ## 🚀 Tech Stack
 
@@ -94,23 +52,7 @@ Healthcheck-project/
 │       └── ingress.yaml            # AWS ALB Ingress Manifest
 │
 └── README.md                       # Master Architecture & Operations Guide
-```
 
----
-
-## ⚙️ GitHub Actions CI/CD Pipeline Setup
-
-To run automated deployments on push to `main` or `master`, configure the following **GitHub Secrets** under **Repository Settings -> Secrets and variables -> Actions**:
-
-| Secret Name | Description | Example Value |
-| :--- | :--- | :--- |
-| `AWS_ACCESS_KEY_ID` | IAM User Access Key | `AKIAXXXXXXXXXXXXXXXX` |
-| `AWS_SECRET_ACCESS_KEY` | IAM User Secret Key | `wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY` |
-| `AWS_REGION` | AWS Region | `us-east-1` |
-| `AWS_ACCOUNT_ID` | 12-digit AWS Account ID | `552823821096` |
-| `EKS_CLUSTER_NAME` | EKS Cluster Name | `health-monitoring-cluster` |
-
----
 
 ## 📊 Accessing Observability & Monitoring
 
